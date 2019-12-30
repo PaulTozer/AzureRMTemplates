@@ -26,18 +26,11 @@
                 "description": "The Prefix for machines - Normally First Two Letters for Company followed by Two for location followed by hyphen (or not)"
             }
         },
-        "VNETAddress": {
+        "VNETName": {
             "type": "string",
             "metadata": {
-                "description": "The VNet Address - From Spreadsheet (10.x.x.0)"
+                "description": "The VNet in Resource Group"
             }
-        },
-        "VNETCIDR": {
-            "type": "string",
-            "metadata": {
-                "description": "The VNet Subnet CIDR Range - From Spreadsheet (Normally /20)"
-            },
-             "defaultValue": "/20"
         },
         "vmSize": {
             "type": "string",
@@ -69,57 +62,32 @@
         }
     },
     "variables": {
-        "virtualNetworkName": "Server",
-        "virtualNetworkAddressRange": "[concat(parameters('VNETAddress'),parameters('VNETCIDR'))]",      
-        "DCNicIPAddress": "10.0.0.4",
         "DCVMName": "[concat(parameters('ComputerNamePrefix'),'DC01')]",
-        "ServerSubnetName": "Server",
-        "adSubnetAddressPrefix": "10.0.0.0/24"
+        "DCVMNICName": "[concat(variables('DCVMName'),'-NIC')]",
+        "DCNICPIPName": "[concat(variables('DCVMName'),'-IP')]",
+        "ServerSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets/', parameters('VNETName'),'Server')]",
+        "ServerSubnetCIDR": "[resourceId(variables('ServerSubnetRef'), '2018-04-01').addressPrefix]",
+        "AddressArray": {
+            "type": "array",
+            "value": "[split(variables('ServerSubnetCIDR'),'.')]"
+        },
+        "DCNicIPAddress": "[concat(variables('AddressArray').value[0],'.',variables('AddressArray').value[1],'.1.200')]"
+
     },
     "resources": [
         {
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2019-02-01",
-            "name": "[variables('DCVMName')]",
+            "name": "[variables('DCNICPIPName')]",
             "location": "[parameters('location')]",
             "properties": {
                 "publicIPAllocationMethod": "Static"
             }
-        },
-        {
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2018-11-01",
-            "name": "VNet",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[uri(parameters('_artifactsLocation'), concat('nestedtemplates/vnet.json', parameters('_artifactsLocationSasToken')))]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "virtualNetworkName": {
-                        "value": "[variables('virtualNetworkName')]"
-                    },
-                    "virtualNetworkAddressRange": {
-                        "value": "[variables('virtualNetworkAddressRange')]"
-                    },
-                    "subnetName": {
-                        "value": "[variables('ServerSubnetName')]"
-                    },
-                    "subnetRange": {
-                        "value": "[variables('adSubnetAddressPrefix')]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    }
-                }
-            }
-        },
-        
+        },        
         {
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-02-01",
-            "name": "[variables('DCVMName')]",
+            "name": "[variables('DCVMNICName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "VNet"
@@ -131,8 +99,8 @@
                         "properties": {
                             "privateIPAllocationMethod": "Static",
                             "privateIPAddress": "[variables('DCNicIPAddress')]",
-                            "subnet":{ "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('ServerSubnetName'))]"},
-                            "publicIPAddress": {"id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]"}
+                            "subnet":{ "id": "[variables('ServerSubnetRef')]"},
+                            "publicIPAddress": {"id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('DCNICPIPName'))]"}
                                 
                             
                         }
@@ -188,7 +156,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('DCVMName'))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('DCVMNICName'))]"
                         }
                     ]
                 }
@@ -226,43 +194,7 @@
                     }
                 }
             ]
-        },
-        {
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2018-11-01",
-            "name": "UpdateVNetDNS",
-            "dependsOn": [
-                "CreateADForest"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[uri(parameters('_artifactsLocation'), concat('nestedtemplates/vnet-with-dns-server.json', parameters('_artifactsLocationSasToken')))]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "virtualNetworkName": {
-                        "value": "[variables('virtualNetworkName')]"
-                    },
-                    "virtualNetworkAddressRange": {
-                        "value": "[variables('virtualNetworkAddressRange')]"
-                    },
-                    "subnetName": {
-                        "value": "[variables('ServerSubnetName')]"
-                    },
-                    "subnetRange": {
-                        "value": "[variables('adSubnetAddressPrefix')]"
-                    },
-                    "DNSServerAddress": {
-                        "value": [
-                            "[variables('DCNicIPAddress')]"
-                        ]
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    }
-                }
-            }
         }
+        
     ]
 }
