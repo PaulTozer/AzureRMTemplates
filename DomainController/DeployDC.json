@@ -66,7 +66,7 @@
         "DCVMNICName": "[concat(variables('DCVMName'),'-NIC')]",
         "DCNICPIPName": "[concat(variables('DCVMName'),'-IP')]",
         "ServerSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets/', parameters('VNETName'),'Server')]",
-        "ServerSubnetCIDR": "[resourceId(variables('ServerSubnetRef'), '2018-04-01').addressPrefix]",
+        "ServerSubnetCIDR": "[resourceId('Microsoft.Network/virtualNetworks/subnets/', parameters('VNETName'),'Server').addressPrefix]",
         "AddressArray": {
             "type": "array",
             "value": "[split(variables('ServerSubnetCIDR'),'.')]"
