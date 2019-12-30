@@ -1,0 +1,87 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "VNETName": {
+            "type": "string",
+            "metadata": {
+                "description": "Should be Company Name followed by -VNET- Followed by Location"
+            },
+            "defaultValue": "CompanyName-VNet-Location"
+        },
+        "VNETAddress": {
+            "type": "string",
+            
+            "metadata": {
+                "description": "The VNet Address - From Spreadsheet (10.x.x.0)"
+            },
+            "defaultValue": "10.x.x.0"
+        },
+        "VNETCIDR": {
+            "type": "string",
+            "metadata": {
+                "description": "The VNet Subnet CIDR Range - From Spreadsheet (Normally /20)"
+            },
+             "defaultValue": "/20"
+        },
+       
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        }
+    },
+    "variables": {
+        "AddressArray": {
+            "type": "array",
+            "value": "[split(parameters('VNETAddress'),'.')]"
+        },
+        "virtualNetworkAddressRange": "[concat(parameters('VNETAddress'),parameters('VNETCIDR'))]",      
+        "3rdOctet": "[int(variables('AddressArray').value[2])]",
+        "ServerSubnetName": "Server",
+        "ServerSubnetIPOctet": "[add(variables('3rdOctet'), 1)]",
+        "ServerSubnetAddressPrefix": "[concat(variables('AddressArray').value[0],'.',variables('AddressArray').value[1],'.',variables('ServerSubnetIPOctet'),'.',variables('AddressArray').value[3],'/24')]",
+        "DMZSubnetName": "DMZ",
+        "DMZSubnetIPOctet": "[add(variables('3rdOctet'), 2)]",
+        "DMZSubnetAddressPrefix": "[concat(variables('AddressArray').value[0],'.',variables('AddressArray').value[1],'.',variables('DMZSubnetIPOctet'),'.',variables('AddressArray').value[3],'/24')]",
+        "GatewaySubnetIPOctet": "[add(variables('3rdOctet'), 15)]",
+        "GatewaySubnetAddressPrefix": "[concat(variables('AddressArray').value[0],'.',variables('AddressArray').value[1],'.',variables('GatewaySubnetIPOctet'),'.',variables('AddressArray').value[3],'/24')]"
+        
+    },
+
+    "resources": [
+       {           
+            "name": "[parameters('VNETName')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            
+            "apiVersion": "2019-09-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": ["[variables('virtualNetworkAddressRange')]"]
+                },           
+            "subnets": [
+            {
+                "name": "[variables('ServerSubnetName')]",
+                "properties": {
+                    "addressPrefix": "[variables('ServerSubnetAddressPrefix')]"
+                }
+            },
+            {
+                "name": "[variables('DMZSubnetName')]",
+                "properties": {
+                    "addressPrefix": "[variables('DMZSubnetAddressPrefix')]"
+                }
+            },
+            {
+               "name": "GatewaySubnet",
+                "properties": {
+                    "addressPrefix": "[variables('GatewaySubnetAddressPrefix')]"
+                }
+            }]
+        }
+    }
+    ]
+}
