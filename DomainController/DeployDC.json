@@ -32,19 +32,19 @@
                 "description": "The VNet in Resource Group"
             }
         },
+        "ServerSubnetCIDR": {
+            "type": "string",
+            "metadata": {
+                "description": "The IP Range CIDR of the Server Subnet"
+            },
+            "defaultValue":"10.0.1.0"
+        },
         "vmSize": {
             "type": "string",
             "defaultValue": "Standard_B2ms",
             "metadata": {
                 "description": "Size of the VM for the Domain controller"
             }
-        },
-        "_artifactsLocation": {
-            "type": "string",
-            "metadata": {
-                "description": "The location of resources, such as templates and DSC modules, that the template depends on"
-            },
-            "defaultValue": "[deployment().properties.templateLink.uri]"
         },
         
         "location": {
@@ -60,14 +60,13 @@
         "DCVMNICName": "[concat(variables('DCVMName'),'-NIC')]",
         "DCNICPIPName": "[concat(variables('DCVMName'),'-IP')]",
         "ServerSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets/', parameters('VNETName'),'Server')]",
-        "ServerSubnetCIDR": "[parameters('VNETName').subnets[0].addressPrefix]",
-
+          
         
         "AddressArray": {
             "type": "array",
-            "value": "[split(variables('ServerSubnetCIDR'),'.')]"
+            "value": "[split(parameters('ServerSubnetCIDR'),'.')]"
         },
-        "DCNicIPAddress": "[concat(variables('AddressArray').value[0],'.',variables('AddressArray').value[1],'.1.200')]"
+        "DCNicIPAddress": "[concat(variables('AddressArray').value[0],'.',variables('AddressArray').value[1], variables('AddressArray').value[2],'.200')]"
 
     },
     "resources": [
@@ -172,7 +171,7 @@
                         "typeHandlerVersion": "2.19",
                         "autoUpgradeMinorVersion": true,
                         "settings": {
-                            "ModulesUrl": "[uri(parameters('_artifactsLocation'), concat('DSC/CreateADPDC.zip'))]",
+                            "ModulesUrl": "[uri(deployment().properties.templateLink.uri, concat('DSC/CreateADPDC.zip'))]",
                             "ConfigurationFunction": "CreateADPDC.ps1\\CreateADPDC",
                             "Properties": {
                                 "DomainName": "[parameters('domainName')]",
