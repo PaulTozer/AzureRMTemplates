@@ -37,7 +37,7 @@
             "metadata": {
                 "description": "The IP Range CIDR of the Server Subnet"
             },
-            "defaultValue":"10.0.1.0"
+            "defaultValue":"10.x.1.0"
         },
         "vmSize": {
             "type": "string",
@@ -106,7 +106,7 @@
             "name": "[variables('DCVMName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[variables('DCVMName')]"
+                "[variables('DCVMNICName')]"
             ],
             "properties": {
                 "hardwareProfile": {
