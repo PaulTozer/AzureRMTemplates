@@ -84,6 +84,9 @@
             "apiVersion": "2019-02-01",
             "name": "[variables('DCVMNICName')]",
             "location": "[parameters('location')]",
+            "dependsOn": [
+                "[variables('DCNICPIPName')]"
+            ],
             "properties": {
                 "ipConfigurations": [
                     {
