@@ -56,7 +56,7 @@
         }
     },
     "variables": {
-        "FSVMName": "[concat(parameters('ComputerNamePrefix'),'DC01')]",
+        "FSVMName": "[concat(parameters('ComputerNamePrefix'),'FS01')]",
         "FSVMNICName": "[concat(variables('FSVMName'),'-NIC')]",
         "FSNICPIPName": "[concat(variables('FSVMName'),'-IP')]",
         "ServerSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets/', parameters('VNETName'),'Server')]",
