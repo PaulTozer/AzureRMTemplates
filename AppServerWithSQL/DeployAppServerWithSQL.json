@@ -1,0 +1,246 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Domain Administrator account of the new VM and domain"
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The password for the Domain Administrator account of the new VM and domain"
+            }
+        },
+        "domainName": {
+            "type": "string",
+            "metadata": {
+                "description": "The FQDN of the Active Directory Domain to Join"
+            }
+        },
+        "ComputerNamePrefix": {
+            "type": "string",
+            "metadata": {
+                "description": "The Prefix for machines - Normally First Two Letters for Company followed by Two for location followed by hyphen (or not)"
+            }
+        },
+        "VNETName": {
+            "type": "string",
+            "metadata": {
+                "description": "The VNet in Resource Group"
+            }
+        },
+        "ServerSubnetCIDR": {
+            "type": "string",
+            "metadata": {
+                "description": "The IP Range CIDR of the Server Subnet"
+            },
+            "defaultValue":"10.x.1.0"
+        },
+        "vmSize": {
+            "type": "string",
+            "defaultValue": "Standard_D2s_v3",
+            "metadata": {
+                "description": "Size of the VM for the File controller"
+            }
+        },
+        
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        }
+    },
+    "variables": {
+        "APPVMName": "[concat(parameters('ComputerNamePrefix'),'APP01')]",
+        "APPVMNICName": "[concat(variables('APPVMName'),'-NIC')]",
+        "APPNICPIPName": "[concat(variables('APPVMName'),'-IP')]",
+        "ServerSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets/', parameters('VNETName'),'Server')]",
+          
+        
+        "AddressArray": {
+            "type": "array",
+            "value": "[split(parameters('ServerSubnetCIDR'),'.')]"
+        },
+        "APPNicIPAddress": "[concat(variables('AddressArray').value[0],'.',variables('AddressArray').value[1],'.',variables('AddressArray').value[2],'.130')]",
+        "SQLDataPath": "F:\\Program Files\\Microsoft SQL Server\\Data",
+        "SQLLogPath" : "L:\\Program Files\\Microsoft SQL Server\\Data",
+        "DataLUN": {
+            "type": "array",
+            "value": 0
+        },
+        "LogsLUN": {
+            "type": "array",
+            "value": 1
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2019-02-01",
+            "name": "[variables('APPNICPIPName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "publicIPAllocationMethod": "Static"
+            }
+        },        
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-02-01",
+            "name": "[variables('APPVMNICName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[variables('APPNICPIPName')]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Static",
+                            "privateIPAddress": "[variables('APPNicIPAddress')]",
+                            "subnet":{ "id": "[variables('ServerSubnetRef')]"},
+                            "publicIPAddress": {"id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('APPNICPIPName'))]"}
+                                
+                            
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-03-01",
+            "name": "[variables('APPVMName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[variables('APPVMNICName')]"
+            ],
+            "tags": {
+                "UpdateVMType": "Infrastructure"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[variables('APPVMName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "2019-Datacenter",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[concat(variables('APPVMName'),'_OSDisk')]",
+                        "caching": "ReadOnly",
+                        "createOption": "FromImage",
+                        "managedDisk": {
+                            "storageAccountType": "StandardSSD_LRS"
+                        }
+                    },
+                    "dataDisks": [
+                        {
+                            "name": "[concat(variables('APPVMName'), '_DataDisk')]",
+                            "caching": "ReadWrite",
+                            "createOption": "Empty",
+                            "diskSizeGB": 64,
+                            "managedDisk": {
+                                "storageAccountType": "Premium_LRS"
+                            },
+                            "lun": 0
+                        },
+                        {
+                            "name": "[concat(variables('APPVMName'), '_LogDisk')]",
+                            "caching": "ReadWrite",
+                            "createOption": "Empty",
+                            "diskSizeGB": 32,
+                            "managedDisk": {
+                                "storageAccountType": "Premium_LRS"
+                            },
+                            "lun": 1
+                        }
+                    ]
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('APPVMNICName'))]"
+                        }
+                    ]
+                }
+            },
+            "resources": [
+                {
+                    "type": "extensions",
+                    "apiVersion": "2019-03-01",
+                    "name": "JoinDomain",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[variables('APPVMName')]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Powershell",
+                        "type": "DSC",
+                        "typeHandlerVersion": "2.19",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {
+                            "ModulesUrl": "[uri(deployment().properties.templateLink.uri, concat('DSC/JoinDomain.zip'))]",
+                            "ConfigurationFunction": "CreateFS.ps1\\JoinDomain",
+                            "Properties": {
+                                "DomainName": "[parameters('domainName')]",
+                                "AdminCreds": {
+                                    "UserName": "[parameters('adminUsername')]",
+                                    "Password": "PrivateSettingsRef:AdminPassword"
+                                }
+                            }
+                        },
+                        "protectedSettings": {
+                            "Items": {
+                                "AdminPassword": "[parameters('adminPassword')]"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Microsoft.SqlVirtualMachine/SqlVirtualMachines",
+            "apiVersion": "2017-03-01-preview",
+            "name": "[variables('APPVMName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', variables('APPVMName'))]"
+      ],
+      "properties": {
+        "virtualMachineResourceId": "[resourceId('Microsoft.Compute/virtualMachines', variables('APPVMName'))]",
+        "sqlManagement": "Full",
+        "SqlServerLicenseType": "PAYG",
+        "StorageConfigurationSettings": {
+          "DiskConfigurationType": "NEW",
+          "StorageWorkloadType": "General",
+          "SQLDataSettings": {
+            "LUNs": "[variables('DataLUN')]",
+            "DefaultFilePath": "[variables('SQLDataPath')]"
+          },
+          "SQLLogSettings": {
+            "Luns": "[variables('LogsLUN')]",
+            "DefaultFilePath": "[variables('SQLLogPath')]"
+          },
+          "SQLTempDbSettings": {
+            "DefaultFilePath": "[variables('SQLDataPath')]"
+          }
+        }
+      }
+    }
+        
+    ]
+}
