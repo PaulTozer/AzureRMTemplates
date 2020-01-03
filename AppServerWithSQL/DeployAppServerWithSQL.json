@@ -134,9 +134,9 @@
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "publisher": "MicrosoftWindowsServer",
-                        "offer": "WindowsServer",
-                        "sku": "2019-Datacenter",
+                        "publisher": "MicrosoftSQLServer",
+                        "offer": "sql2017-ws2019",
+                        "sku": "express",
                         "version": "latest"
                     },
                     "osDisk": {
