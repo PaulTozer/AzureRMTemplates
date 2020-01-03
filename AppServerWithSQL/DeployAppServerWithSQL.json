@@ -53,6 +53,16 @@
             "metadata": {
                 "description": "Location for all resources."
             }
+        },
+
+        "SqlDataDisksCount": {
+            "type": "int",
+            "defaultValue": 1,
+            "minValue": 1,
+            "maxValue": 8,
+            "metadata": {   
+            "description": "Amount of data disks for SQL Data files"
+            }
         }
     },
     "variables": {
@@ -69,12 +79,8 @@
         "APPNicIPAddress": "[concat(variables('AddressArray').value[0],'.',variables('AddressArray').value[1],'.',variables('AddressArray').value[2],'.130')]",
         "SQLDataPath": "F:\\Program Files\\Microsoft SQL Server\\Data",
         "SQLLogPath" : "L:\\Program Files\\Microsoft SQL Server\\Data",
-        "LUNQuantity": {
-            "type": "int",
-            "value": 1
-        },
-        "DataDisksLuns": "[array(range(0 ,variables('LUNQuantity')))]",
-        "LogDisksLuns": "[array(range(variables('LUNQuantity'), variables('LUNQuantity')))]"
+        "DataDisksLuns": "[array(range(0 , parameters('SqlDataDisksCount')))]",
+        "LogDisksLuns": "[array(range(parameters('SqlDataDisksCount'), parameters('SqlDataDisksCount')))]"
     },
     "resources": [
         {
