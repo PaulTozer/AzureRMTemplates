@@ -68,8 +68,10 @@
         },
         "APPNicIPAddress": "[concat(variables('AddressArray').value[0],'.',variables('AddressArray').value[1],'.',variables('AddressArray').value[2],'.130')]",
         "SQLDataPath": "F:\\Program Files\\Microsoft SQL Server\\Data",
-        "SQLLogPath" : "L:\\Program Files\\Microsoft SQL Server\\Data"
-        
+        "SQLLogPath" : "L:\\Program Files\\Microsoft SQL Server\\Data",
+        "Quantity": "1",
+        "DataDisksLuns": "[array(range(0 ,variables('Quantity')))]",
+        "LogDisksLuns": "[array(range(variables('Quantity'), variables('Quantity')))]"
     },
     "resources": [
         {
@@ -221,15 +223,15 @@
           "DiskConfigurationType": "NEW",
           "StorageWorkloadType": "General",
           "SQLDataSettings": {
-            "LUNs": [2],
+            "LUNs": "[variables('DataDisksLUNs')]",
             "DefaultFilePath": "[variables('SQLDataPath')]"
           },
           "SQLLogSettings": {
-            "Luns": [3],
+            "Luns": "[variables('LogDisksLUNs')]",
             "DefaultFilePath": "[variables('SQLLogPath')]"
           },
           "SQLTempDbSettings": {
-            "DefaultFilePath": "[variables('SQLDataPath')]"
+            "DefaultFilePath": "D:\\TEMP"
           }
         }
       }
