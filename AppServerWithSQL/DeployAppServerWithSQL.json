@@ -187,7 +187,7 @@
                         "autoUpgradeMinorVersion": true,
                         "settings": {
                             "ModulesUrl": "[uri(deployment().properties.templateLink.uri, concat('DSC/JoinDomain.zip'))]",
-                            "ConfigurationFunction": "CreateFS.ps1\\JoinDomain",
+                            "ConfigurationFunction": "JoinDomain.ps1\\JoinDomain",
                             "Properties": {
                                 "DomainName": "[parameters('domainName')]",
                                 "AdminCreds": {
@@ -221,11 +221,11 @@
           "DiskConfigurationType": "NEW",
           "StorageWorkloadType": "General",
           "SQLDataSettings": {
-            "LUNs": [0],
+            "LUNs": [2],
             "DefaultFilePath": "[variables('SQLDataPath')]"
           },
           "SQLLogSettings": {
-            "Luns": [1],
+            "Luns": [3],
             "DefaultFilePath": "[variables('SQLLogPath')]"
           },
           "SQLTempDbSettings": {
