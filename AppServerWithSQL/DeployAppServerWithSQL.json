@@ -70,7 +70,7 @@
         "SQLDataPath": "F:\\Program Files\\Microsoft SQL Server\\Data",
         "SQLLogPath" : "L:\\Program Files\\Microsoft SQL Server\\Data",
         "LUNQuantity": {
-            "type": "integer",
+            "type": "int",
             "value": 1
         },
         "DataDisksLuns": "[array(range(0 ,variables('LUNQuantity')))]",
