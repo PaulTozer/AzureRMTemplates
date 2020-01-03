@@ -69,9 +69,12 @@
         "APPNicIPAddress": "[concat(variables('AddressArray').value[0],'.',variables('AddressArray').value[1],'.',variables('AddressArray').value[2],'.130')]",
         "SQLDataPath": "F:\\Program Files\\Microsoft SQL Server\\Data",
         "SQLLogPath" : "L:\\Program Files\\Microsoft SQL Server\\Data",
-        "Quantity": 1,
-        "DataDisksLuns": "[array(range(0 ,variables('Quantity')))]",
-        "LogDisksLuns": "[array(range(variables('Quantity'), variables('Quantity')))]"
+        "LUNQuantity": {
+            "type": "integer",
+            "value": 1
+        },
+        "DataDisksLuns": "[array(range(0 ,variables('LUNQuantity')))]",
+        "LogDisksLuns": "[array(range(variables('LUNQuantity'), variables('LUNQuantity')))]"
     },
     "resources": [
         {
