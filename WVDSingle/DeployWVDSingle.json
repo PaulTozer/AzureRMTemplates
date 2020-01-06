@@ -1,0 +1,267 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Domain Administrator account of the new VM and domain"
+            }
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The password for the Domain Administrator account of the new VM and domain"
+            }
+        },
+        "domainName": {
+            "type": "string",
+            "metadata": {
+                "description": "The FQDN of the Active Directory Domain to Join"
+            }
+        },
+        "ComputerNamePrefix": {
+            "type": "string",
+            "metadata": {
+                "description": "The Prefix for machines - Normally First Two Letters for Company followed by Two for location followed by hyphen (or not)"
+            }
+        },
+        "VNETName": {
+            "type": "string",
+            "metadata": {
+                "description": "The VNet in Resource Group"
+            }
+        },
+        "ServerSubnetCIDR": {
+            "type": "string",
+            "metadata": {
+                "description": "The IP Range CIDR of the Server Subnet"
+            },
+            "defaultValue":"10.x.1.0"
+        },
+        "vmSize": {
+            "type": "string",
+            "defaultValue": "Standard_D2s_v3",
+            "metadata": {
+                "description": "Size of the VM for the File controller"
+            }
+        },
+        
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        },
+        "RDBrokerURL": {
+            "type": "string",
+            "metadata": {
+                "description": "The Broker URL of the Windows Virtual Desktop deployment the session hosts will be connected to."
+            },
+            "defaultValue": "https://rdbroker.wvd.microsoft.com"
+        },
+        "ExistingTenantGroupName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the tenant group in the Windows Virtual Desktop deployment"
+            },
+            "defaultValue": "Default Tenant Group"
+        },"ExistingTenantName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the tenant in the Windows Virtual Desktop deployment."
+            }
+        },
+        "HostPoolName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the hostpool to be created in the RDS Tenant."
+            }
+        },
+        "TenantAdminUpnOrApplicationId": {
+            "type": "string",
+            "metadata": {
+                "description": "The template will fail if you enter a user account that requires MFA or an application that is secured by a certificate. The UPN or ApplicationId must be an RDS Owner in the WVD Tenant to create the hostpool or an RDS Owner of the host pool to provision the host pool with additional VMs."
+            }
+        },
+        "TenantAdminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The password that corresponds to the tenant admin UPN."
+            }
+        },
+        "isServicePrincipal": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "The boolean value indicating if the credentials are for a service principal."
+            }
+        },
+        "AadTenantId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Required when isServicePrincipal = True. This value identifies the Azure AD tenant of the service principal."
+            }
+        },
+        "rdshIs1809OrLater": {
+            "type": "bool",
+            "defaultValue": true,
+            "metadata": {
+                "description": "If the VM is Windows Server 2019+ or Windows 10 1809+, enter true. Else, enter false."
+            }
+        }
+    },
+    "variables": {
+        "FSVMName": "[concat(parameters('ComputerNamePrefix'),'RDS01')]",
+        "FSVMNICName": "[concat(variables('FSVMName'),'-NIC')]",
+        "FSNICPIPName": "[concat(variables('FSVMName'),'-IP')]",
+        "ServerSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets/', parameters('VNETName'),'Server')]",
+        "HostPoolFriendlyName": "Hostpool",
+        "HostPoolDescription": "Created through ARM template",  
+        "RegistrationExpirationHours": "48",
+        "existingDomainUsername": "[first(split(parameters('adminUsername'), '@'))]",
+        "AddressArray": {
+            "type": "array",
+            "value": "[split(parameters('ServerSubnetCIDR'),'.')]"
+        },
+        "FSNicIPAddress": "[concat(variables('AddressArray').value[0],'.',variables('AddressArray').value[1],'.',variables('AddressArray').value[2],'.161')]"
+
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2019-02-01",
+            "name": "[variables('FSNICPIPName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "publicIPAllocationMethod": "Static"
+            }
+        },        
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-02-01",
+            "name": "[variables('FSVMNICName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[variables('FSNICPIPName')]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Static",
+                            "privateIPAddress": "[variables('FSNicIPAddress')]",
+                            "subnet":{ "id": "[variables('ServerSubnetRef')]"},
+                            "publicIPAddress": {"id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('FSNICPIPName'))]"}
+                                
+                            
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-03-01",
+            "name": "[variables('FSVMName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[variables('FSVMNICName')]"
+            ],
+            "tags": {
+                "UpdateVMType": "Infrastructure"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[variables('FSVMName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsDesktop",
+                        "offer": "Windows-10",
+                        "sku": "19h2-evd",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[concat(variables('FSVMName'),'_OSDisk')]",
+                        "caching": "ReadOnly",
+                        "createOption": "FromImage",
+                        "managedDisk": {
+                            "storageAccountType": "StandardSSD_LRS"
+                        }
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('FSVMNICName'))]"
+                        }
+                    ]
+                }
+            }
+        },
+            {
+                    "apiVersion": "2015-06-15",
+                    "type": "Microsoft.Compute/virtualMachines/extensions",
+                    "name": "[concat(variables('FSVMName'),'/','rdAgent')]",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": ["[concat('Microsoft.Compute/virtualMachines/', concat(variables('FSVMName'), copyindex(),'/extensions/DeployWVDSingle'))]"],
+                    "properties": {
+                    "publisher": "Microsoft.Compute",
+                    "type": "CustomScriptExtension",
+                    "typeHandlerVersion": "1.8",
+                    "autoUpgradeMinorVersion": true,
+                    "settings": {
+                        "fileUris": [
+                            "[uri(deployment().properties.templateLink.uri, concat('/Scripts/Script.ps1'))]"
+                        ]
+                    },
+                "protectedSettings": {
+                    "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File Script.ps1',' -RDBrokerURL \"', parameters('RDBrokerURL'), '\"', ' ', ' -definedTenantGroupName \"', parameters('ExistingTenantGroupName'), '\"',' ',' -TenantName \"', parameters('ExistingTenantName'), '\"',' ', ' -HostPoolName \"', parameters('HostPoolName'), '\"',' ', ' -FriendlyName \"', variables('HostPoolFriendlyName'), '\"',' ', ' -Description \"', variables('HostPoolDescription'), '\"',' ', ' -Hours \"', variables('RegistrationExpirationHours'), '\"',' ', ' -TenantAdminUPN \"', parameters('TenantAdminUpnOrApplicationId'), '\"',' ', ' -TenantAdminPassword \"', parameters('TenantAdminPassword'), '\"',' ',' -localAdminUsername \"', variables('existingDomainUsername'), '\"',' ', ' -localAdminpassword \"', parameters('adminPassword'), '\"',' ', ' -Fileuri \"', uri(deployment().properties.templateLink.uri, concat('/Scripts/DeployAgent.zip')), '\"', ' ', ' -rdshIs1809OrLater \"', parameters('rdshIs1809OrLater'), '\"', ' ', ' -isServicePrincipal \"', parameters('isServicePrincipal'), '\"', ' ', ' -AadTenantId \"', parameters('AadTenantId'), '\"')]"
+                }
+            },
+            "resources": [
+                {
+                    "type": "extensions",
+                    "apiVersion": "2019-03-01",
+                    "name": "DeployWVDSingle",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[variables('FSVMName')]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Powershell",
+                        "type": "DSC",
+                        "typeHandlerVersion": "2.19",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {
+                            "ModulesUrl": "[uri(deployment().properties.templateLink.uri, concat('DSC/DeployWVDSingle.zip'))]",
+                            "ConfigurationFunction": "DeployWVDSingle.ps1\\DeployWVDSingle",
+                            "Properties": {
+                                "DomainName": "[parameters('domainName')]",
+                                "AdminCreds": {
+                                    "UserName": "[parameters('adminUsername')]",
+                                    "Password": "PrivateSettingsRef:AdminPassword"
+                                }
+                            }
+                        },
+                        "protectedSettings": {
+                            "Items": {
+                                "AdminPassword": "[parameters('adminPassword')]"
+                            }
+                        }                  
+                
+                    }
+                }
+            ]
+        }
+    ]
+}
