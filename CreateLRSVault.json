@@ -19,7 +19,10 @@
   },
   "variables": {
     "skuName": "RS0",
-    "skuTier": "Standard"
+    "skuTier": "Standard",
+    "PolName": "DailyBackup",
+    "schedule": {"scheduleRunFrequency":"Daily","scheduleRunDays":null,"scheduleRunTimes":["2020-01-07T23:00:00.000Z"],"schedulePolicyType":"SimpleSchedulePolicy"},
+    "retention": {"dailySchedule":{"retentionTimes":["2020-01-07T23:00:00.000Z"],"retentionDuration":{"count":7,"durationType":"Days"}},"weeklySchedule":{"daysOfTheWeek":["Sunday"],"retentionTimes":["2020-01-07T23:00:00.000Z"],"retentionDuration":{"count":4,"durationType":"Weeks"}},"monthlySchedule":{"retentionScheduleFormatType":"Weekly","retentionScheduleDaily":null,"retentionScheduleWeekly":{"daysOfTheWeek":["Sunday"],"weeksOfTheMonth":["First"]},"retentionTimes":["2020-01-07T23:00:00.000Z"],"retentionDuration":{"count":12,"durationType":"Months"}},"yearlySchedule":{"retentionScheduleFormatType":"Weekly","monthsOfYear":["January"],"retentionScheduleDaily":null,"retentionScheduleWeekly":{"daysOfTheWeek":["Sunday"],"weeksOfTheMonth":["First"]},"retentionTimes":["2020-01-07T23:00:00.000Z"],"retentionDuration":{"count":7,"durationType":"Years"}},"retentionPolicyType":"LongTermRetentionPolicy"}
   },
   "resources": [
     {
@@ -43,6 +46,21 @@
       "properties": {
           "StorageModelType":"LocallyRedundant"
       }
-  }
+    },
+    {
+            "type": "Microsoft.RecoveryServices/vaults/backupPolicies",
+            "apiVersion": "2016-06-01",
+            "name": "[concat(parameters('vaultName'), '/', variables('PolName'))]",
+             "dependsOn": [
+                "[resourceId('Microsoft.RecoveryServices/vaults/', parameters('vaultName'))]"
+            ],
+            "properties": {
+                "backupManagementType": "AzureIaasVM",
+                "schedulePolicy": "[variables('schedule')]",
+                "retentionPolicy": "[variables('retention')]",
+                "timeZone": "UTC",
+                "instantRpRetentionRangeInDays": 2
+            }
+        }
   ]
 }
