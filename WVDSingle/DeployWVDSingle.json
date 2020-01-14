@@ -213,7 +213,7 @@
                     "type": "Microsoft.Compute/virtualMachines/extensions",
                     "name": "[concat(variables('FSVMName'),'/','rdAgent')]",
                     "location": "[resourceGroup().location]",
-                    "dependsOn": ["[concat('Microsoft.Compute/virtualMachines/', concat(variables('FSVMName'), copyindex(),'/extensions/DeployWVDSingle'))]"],
+                    "dependsOn": ["[concat('Microsoft.Compute/virtualMachines/', concat(variables('FSVMName'), '/extensions/DeployWVDSingle'))]"],
                     "properties": {
                     "publisher": "Microsoft.Compute",
                     "type": "CustomScriptExtension",
