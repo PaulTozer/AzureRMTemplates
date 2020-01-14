@@ -206,64 +206,64 @@
                         }
                     ]
                 },      
-         "resources": [
-         {
-                    "type": "Microsoft.Compute/virtualMachines/extensions",
-                    "apiVersion": "2019-03-01",
-                    "name": "DeployWVDSingle",
-                    "location": "[parameters('location')]",
-                    "dependsOn": [
-                        "[variables('FSVMName')]"
-                    ],
-                    "properties": {
-                        "publisher": "Microsoft.Powershell",
-                        "type": "DSC",
-                        "typeHandlerVersion": "2.19",
-                        "autoUpgradeMinorVersion": true,
-                        "settings": {
-                            "ModulesUrl": "[uri(deployment().properties.templateLink.uri, concat('DSC/DeployWVDSingle.zip'))]",
-                            "ConfigurationFunction": "DeployWVDSingle.ps1\\DeployWVDSingle",
-                            "Properties": {
-                                "DomainName": "[parameters('domainName')]",
-                                "AdminCreds": {
-                                    "UserName": "[parameters('adminUsername')]",
-                                    "Password": "PrivateSettingsRef:AdminPassword"
+                "resources": [
+                    {
+                        "type": "extensions",
+                        "apiVersion": "2019-03-01",
+                        "name": "DeployWVDSingle",
+                        "location": "[parameters('location')]",
+                        "dependsOn": [
+                            "[variables('FSVMName')]"
+                        ],
+                        "properties": {
+                            "publisher": "Microsoft.Powershell",
+                            "type": "DSC",
+                            "typeHandlerVersion": "2.19",
+                            "autoUpgradeMinorVersion": true,
+                            "settings": {
+                                "ModulesUrl": "[uri(deployment().properties.templateLink.uri, concat('DSC/DeployWVDSingle.zip'))]",
+                                "ConfigurationFunction": "DeployWVDSingle.ps1\\DeployWVDSingle",
+                                "Properties": {
+                                    "DomainName": "[parameters('domainName')]",
+                                    "AdminCreds": {
+                                        "UserName": "[parameters('adminUsername')]",
+                                        "Password": "PrivateSettingsRef:AdminPassword"
+                                    }
                                 }
+                            },
+                            "protectedSettings": {
+                                "Items": {
+                                    "AdminPassword": "[parameters('adminPassword')]"
+                                }
+                            }                  
+                        }
+                    },
+                    {
+                        "apiVersion": "2019-03-01",
+                        "type": "extensions",
+                        "name": "[concat(variables('FSVMName'),'/','rdAgent')]",
+                        "location": "[resourceGroup().location]",
+                        "dependsOn": ["DeployWVDSingle"],
+                        "properties": {
+                            "publisher": "Microsoft.Compute",
+                            "type": "CustomScriptExtension",
+                            "typeHandlerVersion": "1.8",
+                            "autoUpgradeMinorVersion": true,
+                            "settings": {
+                                "fileUris": [
+                                    "[uri(deployment().properties.templateLink.uri, concat('/Scripts/Script.ps1'))]"
+                                ]
                             }
                         },
                         "protectedSettings": {
-                            "Items": {
-                                "AdminPassword": "[parameters('adminPassword')]"
-                            }
-                        }                  
-                
+                            "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File Script.ps1',' -RDBrokerURL \"', parameters('RDBrokerURL'), '\"', ' ', ' -definedTenantGroupName \"', parameters('ExistingTenantGroupName'), '\"',' ',' -TenantName \"', parameters('ExistingTenantName'), '\"',' ', ' -HostPoolName \"', parameters('HostPoolName'), '\"',' ', ' -FriendlyName \"', variables('HostPoolFriendlyName'), '\"',' ', ' -Description \"', variables('HostPoolDescription'), '\"',' ', ' -Hours \"', variables('RegistrationExpirationHours'), '\"',' ', ' -TenantAdminUPN \"', parameters('TenantAdminUpnOrApplicationId'), '\"',' ', ' -TenantAdminPassword \"', parameters('TenantAdminPassword'), '\"',' ',' -localAdminUsername \"', variables('existingDomainUsername'), '\"',' ', ' -localAdminpassword \"', parameters('adminPassword'), '\"',' ', ' -Fileuri \"', uri(deployment().properties.templateLink.uri, concat('/Scripts/DeployAgent.zip')), '\"', ' ', ' -rdshIs1809OrLater \"', parameters('rdshIs1809OrLater'), '\"', ' ', ' -isServicePrincipal \"', parameters('isServicePrincipal'), '\"', ' ', ' -AadTenantId \"', parameters('AadTenantId'), '\"')]"
+                        }
                     }
-                },
-        {
-                    "apiVersion": "2019-03-01",
-                    "type": "Microsoft.Compute/virtualMachines/extensions",
-                    "name": "[concat(variables('FSVMName'),'/','rdAgent')]",
-                    "location": "[resourceGroup().location]",
-                    "dependsOn": ["DeployWVDSingle"],
-                    "properties": {
-                    "publisher": "Microsoft.Compute",
-                    "type": "CustomScriptExtension",
-                    "typeHandlerVersion": "1.8",
-                    "autoUpgradeMinorVersion": true,
-                    "settings": {
-                        "fileUris": [
-                            "[uri(deployment().properties.templateLink.uri, concat('/Scripts/Script.ps1'))]"
-                        ]
-                    },
-                "protectedSettings": {
-                    "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File Script.ps1',' -RDBrokerURL \"', parameters('RDBrokerURL'), '\"', ' ', ' -definedTenantGroupName \"', parameters('ExistingTenantGroupName'), '\"',' ',' -TenantName \"', parameters('ExistingTenantName'), '\"',' ', ' -HostPoolName \"', parameters('HostPoolName'), '\"',' ', ' -FriendlyName \"', variables('HostPoolFriendlyName'), '\"',' ', ' -Description \"', variables('HostPoolDescription'), '\"',' ', ' -Hours \"', variables('RegistrationExpirationHours'), '\"',' ', ' -TenantAdminUPN \"', parameters('TenantAdminUpnOrApplicationId'), '\"',' ', ' -TenantAdminPassword \"', parameters('TenantAdminPassword'), '\"',' ',' -localAdminUsername \"', variables('existingDomainUsername'), '\"',' ', ' -localAdminpassword \"', parameters('adminPassword'), '\"',' ', ' -Fileuri \"', uri(deployment().properties.templateLink.uri, concat('/Scripts/DeployAgent.zip')), '\"', ' ', ' -rdshIs1809OrLater \"', parameters('rdshIs1809OrLater'), '\"', ' ', ' -isServicePrincipal \"', parameters('isServicePrincipal'), '\"', ' ', ' -AadTenantId \"', parameters('AadTenantId'), '\"')]"
-                }
+                ]
             }
-            
+        
         }
-        ]
-        }
-        }   
+           
     ]
 }
 
