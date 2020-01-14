@@ -205,7 +205,8 @@
                             "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('FSVMNICName'))]"
                         }
                     ]
-                },      
+                }
+            },      
                 "resources": [
                     {
                         "type": "extensions",
@@ -260,7 +261,7 @@
                         }
                     }
                 ]
-            }
+            
         
         }
            
