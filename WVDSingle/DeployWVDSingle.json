@@ -242,9 +242,12 @@
                     {
                         "apiVersion": "2019-03-01",
                         "type": "extensions",
-                        "name": "[concat(variables('FSVMName'),'/','rdAgent')]",
+                        "name": "rdAgent",
                         "location": "[resourceGroup().location]",
-                        "dependsOn": ["DeployWVDSingle"],
+                        "dependsOn": [
+                            "DeployWVDSingle",
+                            "[variables('FSVMName')]"
+                        ],
                         "properties": {
                             "publisher": "Microsoft.Compute",
                             "type": "CustomScriptExtension",
@@ -253,12 +256,10 @@
                             "settings": {
                                 "fileUris": [
                                     "[uri(deployment().properties.templateLink.uri, concat('/Scripts/Script.ps1'))]"
-                                ]
+                                ],
+                                "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File Script.ps1',' -RDBrokerURL \"', parameters('RDBrokerURL'), '\"', ' ', ' -definedTenantGroupName \"', parameters('ExistingTenantGroupName'), '\"',' ',' -TenantName \"', parameters('ExistingTenantName'), '\"',' ', ' -HostPoolName \"', parameters('HostPoolName'), '\"',' ', ' -FriendlyName \"', variables('HostPoolFriendlyName'), '\"',' ', ' -Description \"', variables('HostPoolDescription'), '\"',' ', ' -Hours \"', variables('RegistrationExpirationHours'), '\"',' ', ' -TenantAdminUPN \"', parameters('TenantAdminUpnOrApplicationId'), '\"',' ', ' -TenantAdminPassword \"', parameters('TenantAdminPassword'), '\"',' ',' -localAdminUsername \"', variables('existingDomainUsername'), '\"',' ', ' -localAdminpassword \"', parameters('adminPassword'), '\"',' ', ' -Fileuri \"', uri(deployment().properties.templateLink.uri, concat('/Scripts/DeployAgent.zip')), '\"', ' ', ' -rdshIs1809OrLater \"', parameters('rdshIs1809OrLater'), '\"', ' ', ' -isServicePrincipal \"', parameters('isServicePrincipal'), '\"', ' ', ' -AadTenantId \"', parameters('AadTenantId'), '\"')]"
                             }
-                        },
-                        "protectedSettings": {
-                            "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File Script.ps1',' -RDBrokerURL \"', parameters('RDBrokerURL'), '\"', ' ', ' -definedTenantGroupName \"', parameters('ExistingTenantGroupName'), '\"',' ',' -TenantName \"', parameters('ExistingTenantName'), '\"',' ', ' -HostPoolName \"', parameters('HostPoolName'), '\"',' ', ' -FriendlyName \"', variables('HostPoolFriendlyName'), '\"',' ', ' -Description \"', variables('HostPoolDescription'), '\"',' ', ' -Hours \"', variables('RegistrationExpirationHours'), '\"',' ', ' -TenantAdminUPN \"', parameters('TenantAdminUpnOrApplicationId'), '\"',' ', ' -TenantAdminPassword \"', parameters('TenantAdminPassword'), '\"',' ',' -localAdminUsername \"', variables('existingDomainUsername'), '\"',' ', ' -localAdminpassword \"', parameters('adminPassword'), '\"',' ', ' -Fileuri \"', uri(deployment().properties.templateLink.uri, concat('/Scripts/DeployAgent.zip')), '\"', ' ', ' -rdshIs1809OrLater \"', parameters('rdshIs1809OrLater'), '\"', ' ', ' -isServicePrincipal \"', parameters('isServicePrincipal'), '\"', ' ', ' -AadTenantId \"', parameters('AadTenantId'), '\"')]"
-                        }
+                        }  
                     }
                 ]
             
