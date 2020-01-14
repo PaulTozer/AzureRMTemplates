@@ -205,9 +205,8 @@
                             "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('FSVMNICName'))]"
                         }
                     ]
-                }
-            }
-        },
+                },      
+         "resources": [
          {
                     "type": "Microsoft.Compute/virtualMachines/extensions",
                     "apiVersion": "2019-03-01",
@@ -262,5 +261,9 @@
             }
             
         }
+        ]
+        }
+        }   
     ]
 }
+
