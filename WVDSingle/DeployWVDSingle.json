@@ -241,11 +241,11 @@
                     }
                 },
         {
-                    "apiVersion": "2015-06-15",
+                    "apiVersion": "2019-03-01",
                     "type": "Microsoft.Compute/virtualMachines/extensions",
                     "name": "[concat(variables('FSVMName'),'/','rdAgent')]",
                     "location": "[resourceGroup().location]",
-                    "dependsOn": ["[concat('Microsoft.Compute/virtualMachines/', concat(variables('FSVMName'), '/extensions/DeployWVDSingle'))]"],
+                    "dependsOn": ["DeployWVDSingle"],
                     "properties": {
                     "publisher": "Microsoft.Compute",
                     "type": "CustomScriptExtension",
