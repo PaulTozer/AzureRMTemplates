@@ -1,0 +1,156 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "VNETName": {
+            "type": "string",
+            "metadata": {
+                "description": "Should be Company Name followed by -VNET- Followed by Location"
+            },
+            "defaultValue": "CompanyName-VNet-Location"
+        },
+        "VNETAddress": {
+            "type": "string",
+            
+            "metadata": {
+                "description": "The VNet Address - From Spreadsheet (10.x.x.0)"
+            },
+            "defaultValue": "10.x.x.0"
+        },
+        "VNETCIDR": {
+            "type": "string",
+            "metadata": {
+                "description": "The VNet Subnet CIDR Range - From Spreadsheet (Normally /20)"
+            },
+             "defaultValue": "/20"
+        },
+        "NetworkWatcherName": {
+            "defaultValue": "NetworkWatcher",
+            "type": "string",
+            "metadata": {
+            "description": "Name of the Network Watcher resource"
+            }
+        },
+        "BastionHostName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of Azure Bastion resource"
+                }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        }
+    },
+    "variables": {
+        "BastionPublicIPAddressName": "[concat(parameters('BastionHostName'),'-IP')]",
+        "AddressArray": {
+            "type": "array",
+            "value": "[split(parameters('VNETAddress'),'.')]"
+        },
+        "virtualNetworkAddressRange": "[concat(parameters('VNETAddress'),parameters('VNETCIDR'))]",      
+        "3rdOctet": "[int(variables('AddressArray').value[2])]",
+        "4thOctet": "[int(variables('AddressArray').value[3])]",
+        "PrivateSubnetName": "Private",
+        "PrivateSubnetIPOctet": "[add(variables('3rdOctet'), 1)]",
+        "PrivateSubnetAddressPrefix": "[concat(variables('AddressArray').value[0],'.',variables('AddressArray').value[1],'.',variables('PrivateSubnetIPOctet'),'.',variables('AddressArray').value[3],'/24')]",
+        "PublicSubnetName": "Public",
+        "PublicSubnetIPOctet": "[add(variables('3rdOctet'), 2)]",
+        "PublicSubnetAddressPrefix": "[concat(variables('AddressArray').value[0],'.',variables('AddressArray').value[1],'.',variables('PublicSubnetIPOctet'),'.',variables('AddressArray').value[3],'/24')]",
+        "GatewaySubnetIPOctet": "[add(variables('3rdOctet'), 15)]",
+        "GatewaySubnetAddressPrefix": "[concat(variables('AddressArray').value[0],'.',variables('AddressArray').value[1],'.',variables('GatewaySubnetIPOctet'),'.',variables('AddressArray').value[3],'/27')]",
+        "BastionSubnetIPOctet": "[add(variables('4thOctet'), 33)]",
+        "BastionSubnetAddressPrefix": "[concat(variables('AddressArray').value[0],'.',variables('AddressArray').value[1],'.',variables('GatewaySubnetIPOctet'),'.',variables('BastionSubnetIPOctet'),'/27')]",
+        "BastionSubnetName": "AzureBastionSubnet"
+    },
+
+    "resources": [
+        {
+            "apiVersion": "2019-02-01",
+            "type": "Microsoft.Network/publicIpAddresses",
+            "name": "[variables('BastionPublicIPAddressName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Standard"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Static"
+            }
+        },
+        {           
+            "name": "[parameters('VNETName')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            
+            "apiVersion": "2019-09-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": ["[variables('virtualNetworkAddressRange')]"]
+                },           
+            "subnets": [
+            {
+                "name": "[variables('PrivateSubnetName')]",
+                "properties": {
+                    "addressPrefix": "[variables('PrivateSubnetAddressPrefix')]"
+                }
+            },
+            {
+                "name": "[variables('PublicSubnetName')]",
+                "properties": {
+                    "addressPrefix": "[variables('PublicSubnetAddressPrefix')]"
+                }
+            },
+            {
+               "name": "GatewaySubnet",
+                "properties": {
+                    "addressPrefix": "[variables('GatewaySubnetAddressPrefix')]"
+                }
+            },
+            {
+               "name": "AzureBastionSubnet",
+                "properties": {
+                    "addressPrefix": "[variables('BastionSubnetAddressPrefix')]"
+                }
+            },
+            {
+            "apiVersion": "2019-11-01",
+            "type": "Microsoft.Network/bastionHosts",
+            "name": "[parameters('BastionHostName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIpAddresses', variables('BastionPublicIPAddressName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('VNETName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNETName'), variables('BastionSubnetName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "IpConf",
+                        "properties": {
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNETName'), variables('BastionSubnetName'))]"
+                            },
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', variables('BastionSubnetName'))]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[parameters('NetworkWatcherName')]",
+            "type": "Microsoft.Network/networkWatchers",
+            "apiVersion": "2019-11-01",
+            "location": "[parameters('location')]",
+            "properties": {},
+            "resources": []
+            }
+            ]
+        }
+    }
+    ]
+}
