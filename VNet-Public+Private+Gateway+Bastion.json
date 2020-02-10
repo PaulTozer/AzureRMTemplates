@@ -124,9 +124,8 @@
             "name": "[parameters('BastionHostName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIpAddresses', variables('BastionPublicIPAddressName'))]",
-                "[resourceId('Microsoft.Network/virtualNetworks', parameters('VNETName'))]",
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNETName'), variables('BastionSubnetName'))]"
+                "[variables('BastionPublicIPAddressName')]",
+                "[parameters('VNETName')]"
             ],
             "properties": {
                 "ipConfigurations": [
@@ -137,7 +136,7 @@
                                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNETName'), variables('BastionSubnetName'))]"
                             },
                             "publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', variables('BastionSubnetName'))]"
+                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', variables('BastionPublicIPAddressName'))]"
                             }
                         }
                     }
