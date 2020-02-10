@@ -62,7 +62,7 @@
         "PublicSubnetAddressPrefix": "[concat(variables('AddressArray').value[0],'.',variables('AddressArray').value[1],'.',variables('PublicSubnetIPOctet'),'.',variables('AddressArray').value[3],'/24')]",
         "GatewaySubnetIPOctet": "[add(variables('3rdOctet'), 15)]",
         "GatewaySubnetAddressPrefix": "[concat(variables('AddressArray').value[0],'.',variables('AddressArray').value[1],'.',variables('GatewaySubnetIPOctet'),'.',variables('AddressArray').value[3],'/27')]",
-        "BastionSubnetIPOctet": "[add(variables('4thOctet'), 33)]",
+        "BastionSubnetIPOctet": "[add(variables('4thOctet'), 32)]",
         "BastionSubnetAddressPrefix": "[concat(variables('AddressArray').value[0],'.',variables('AddressArray').value[1],'.',variables('GatewaySubnetIPOctet'),'.',variables('BastionSubnetIPOctet'),'/27')]",
         "BastionSubnetName": "AzureBastionSubnet"
     },
@@ -110,7 +110,7 @@
                 }
             },
             {
-               "name": "AzureBastionSubnet",
+               "name": "[variables('BastionSubnetName')]",
                 "properties": {
                     "addressPrefix": "[variables('BastionSubnetAddressPrefix')]"
                 }
