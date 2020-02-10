@@ -114,8 +114,11 @@
                 "properties": {
                     "addressPrefix": "[variables('BastionSubnetAddressPrefix')]"
                 }
-            },
-            {
+            }
+            ]
+        }
+        },
+        {
             "apiVersion": "2019-11-01",
             "type": "Microsoft.Network/bastionHosts",
             "name": "[parameters('BastionHostName')]",
@@ -140,7 +143,7 @@
                     }
                 ]
             }
-        },
+        },        
         {
             "name": "[parameters('NetworkWatcherName')]",
             "type": "Microsoft.Network/networkWatchers",
@@ -148,9 +151,9 @@
             "location": "[parameters('location')]",
             "properties": {},
             "resources": []
-            }
-            ]
+            
+            
         }
-    }
+        
     ]
 }
