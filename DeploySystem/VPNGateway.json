@@ -1,0 +1,136 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "VPNGatewayName": {
+            "defaultValue": "CompanyName-VPNGateway-Location",
+            "type": "String"
+        },
+        "VNETName": {
+            "type": "String"
+        },
+        "LocalSiteName": {
+            "type": "String"
+        },
+        "LocalSubnet": {
+            "type": "String",
+            "defaultValue": "192.168.0.0/24"
+        },
+        "LocalPublicIPAddress": {
+            "type": "String"
+        },
+        "SharedKey": {
+            "type": "String",
+            "defaultValue": "tREsUsW8joh7bO44w+1f"
+        }
+        
+    },
+    "variables": {
+        "VPNGatewayIPName": "[concat(parameters('VPNGatewayName'),'-IP')]",
+        "LocalSiteConnectionName": "[concat(parameters('LocalSiteName'),'-Connection')]",
+        "GatewaySubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets/', parameters('VNETName'),'GatewaySubnet')]"
+        
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2019-09-01",
+            "name": "[variables('VPNGatewayIPName')]",
+            "location": "uksouth",
+            "sku": {
+                "name": "Basic"
+            },
+            "properties": {
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 4,
+                "ipTags": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworkGateways",
+            "apiVersion": "2019-09-01",
+            "name": "[parameters('VPNGatewayName')]",
+            "location": "uksouth",
+            "dependsOn": [
+                "[concat('Microsoft.Network/publicIPAddresses/', variables('VPNGatewayIPName'))]"],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "default",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('VPNGatewayIPName'))]"
+                            },
+                            "subnet": {
+                                "id": "[variables('GatewaySubnetRef')]"
+                            }
+                        }
+                    }
+                ],
+                "sku": {
+                    "name": "VpnGw1",
+                    "tier": "VpnGw1"},
+                
+                "gatewayType": "Vpn",
+                "vpnType": "RouteBased",
+                "enableBgp": false,
+                "activeActive": false,
+                "vpnGatewayGeneration": "Generation1"
+                }
+        },
+        {
+            "type": "Microsoft.Network/localNetworkGateways",
+            "apiVersion": "2019-09-01",
+            "name": "[parameters('LocalSiteName')]",
+            "location": "uksouth",
+            "properties": {
+                "localNetworkAddressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('LocalSubnet')]"
+                    ]
+                },
+                "gatewayIpAddress": "[parameters('LocalPublicIPAddress')]"
+            }
+        },
+        {
+            "type": "Microsoft.Network/connections",
+            "apiVersion": "2019-09-01",
+            "name": "[variables('LocalSiteConnectionName')]",
+            "location": "uksouth",
+             "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworkGateways/', parameters('VPNGatewayName'))]",
+                "[concat('Microsoft.Network/localNetworkGateways/', parameters('LocalSiteName'))]"
+            ],
+            "properties": {
+                "virtualNetworkGateway1": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworkGateways', parameters('VPNGatewayName'))]"
+                },
+                "localNetworkGateway2": {
+                    "id": "[resourceId('Microsoft.Network/localNetworkGateways', parameters('LocalSiteName'))]"
+                },
+                "connectionType": "IPsec",
+                "connectionProtocol": "IKEv2",
+                "routingWeight": 0,
+                "sharedKey": "[parameters('SharedKey')]",
+                "enableBgp": false,
+                "usePolicyBasedTrafficSelectors": true,
+                "ipsecPolicies": [
+                    {
+                        "saLifeTimeSeconds": 86400,
+                        "saDataSizeKilobytes": 102400000,
+                        "ipsecEncryption": "AES128",
+                        "ipsecIntegrity": "SHA1",
+                        "ikeEncryption": "AES128",
+                        "ikeIntegrity": "SHA1",
+                        "dhGroup": "DHGroup2",
+                        "pfsGroup": "None"
+                    }
+                ],
+                "trafficSelectorPolicies": [],
+                "expressRouteGatewayBypass": false
+            }
+        }
+    ]
+}
