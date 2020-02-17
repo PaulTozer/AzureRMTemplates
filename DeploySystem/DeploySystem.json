@@ -51,7 +51,8 @@
         }
     },
     "variables": {
-        "vnetTemplateUri": "[uri(deployment().properties.templateLink.uri, concat('VNet-2Subnet+Gateway.json'))]"
+        "vnetTemplateUri": "[uri(deployment().properties.templateLink.uri, concat('VNet-2Subnet+Gateway.json'))]",
+        "vpnGatewayTemplateUri": "[uri(deployment().properties.templateLink.uri, concat('VPNGateway.json'))]"
     },
     "resources": [
        {           
@@ -88,7 +89,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[variables('vnetTemplateUri')]",
+                    "uri": "[variables('vpnGatewayTemplateUri')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
