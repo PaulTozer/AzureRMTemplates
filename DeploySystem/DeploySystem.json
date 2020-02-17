@@ -9,6 +9,10 @@
             },
             "defaultValue": "CompanyName-VNet-Location"
         },
+        "VPNGatewayName": {
+            "defaultValue": "CompanyName-VPNGateway-Location",
+            "type": "String"
+        },
         "VNETAddress": {
             "type": "string",
             
@@ -24,7 +28,20 @@
             },
              "defaultValue": "/20"
         },
-       
+        "LocalSiteName": {
+            "type": "String"
+        },
+        "LocalSubnet": {
+            "type": "String",
+            "defaultValue": "192.168.0.0/24"
+        },
+        "LocalPublicIPAddress": {
+            "type": "String"
+        },
+        "SharedKey": {
+            "type": "String",
+            "defaultValue": "tREsUsW8joh7bO44w+1f"
+        },
         "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
@@ -38,8 +55,7 @@
     },
     "resources": [
        {           
-         
-            "name": "VNet",
+            "name": "VNET",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2016-09-01",
             "properties": {
@@ -62,9 +78,41 @@
                         "value": "[parameters('location')]"
                     }
                 }
-            }
-        
-    }
+            }     
+        },
+        {           
+            "name": "VPNGateway",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2016-09-01",
+            "dependsOn": ["VNET"],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('vnetTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "VPNGatewayName": {
+                        "value": "[parameters('VPNGatewayName')]"
+                    },
+                    "VNETName": {
+                        "value": "[parameters('VNETName')]"
+                    },
+                    "LocalSiteName": {
+                        "value": "[parameters('LocalSiteName')]"
+                    },
+                    "LocalSubnet": {
+                        "value": "[parameters('LocalSubnet')]"
+                    },
+                    "LocalPublicIPAddress": {
+                        "value": "[parameters('LocalPublicIPAddress')]"
+                    },
+                    "SharedKey": {
+                        "value": "[parameters('SharedKey')]"
+                    }
+                }
+            }     
+        }
     ]
 
     
