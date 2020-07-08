@@ -1,0 +1,44 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "HostPoolName": {
+            "type": "string"
+        }
+    },
+    "functions": [],
+    "variables": {},
+    
+    "resources": [
+         {
+             "type": "Microsoft.DesktopVirtualization/hostpools",
+             "apiVersion": "2019-12-10-preview",
+             "name" : "[parameters('HostPoolName')]",
+             "location": "East US" ,
+             "properties": {
+                 "description": "[concat(parameters('HostPoolName'),' Host Pool')]",
+                 "hostPoolType": "Shared",
+                 "personalDesktopAssignmentType": "Automatic",
+                 "loadBalancerType": "BreadthFirst",
+                 "maxSessionLimit": 999999
+             }            
+        },
+        {
+            "type": "Microsoft.DesktopVirtualization/applicationGroups",
+            "apiVersion": "2019-12-10-preview",
+            "name":"[concat(parameters('HostPoolName'),'-DAG')]",
+            "dependsOn":["[resourceId('Microsoft.DesktopVirtualization/hostpools', parameters('HostPoolName'))]"],
+            "location": "East US",
+            "properties":  {
+                "applicationGroupType": "Desktop",
+                "hostPoolArmPath": "[resourceId('Microsoft.DesktopVirtualization/hostpools', parameters('HostPoolName'))]"
+            }
+        }   
+    ],
+    "outputs": {
+        "resourceID": {
+            "type": "string",
+            "value":  "[resourceId('Microsoft.DesktopVirtualization/hostpools', parameters('HostPoolName'))]"
+        }
+    }
+}
