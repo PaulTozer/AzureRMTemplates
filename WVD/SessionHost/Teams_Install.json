@@ -28,7 +28,7 @@
       "typeHandlerVersion": "1.7",
       "autoUpgradeMinorVersion":true,
       "settings": {
-       "fileUris": "[uri(deployment().properties.templateLink.uri, '/Scripts/Teams.ps1')]",
+       "fileUris": ["https://raw.githubusercontent.com/PaulTozer/AzureRMTemplates/master/WVD/SessionHost/Teams/Teams.ps1"],
         "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File Teams.ps1"
       }
   }
