@@ -20,7 +20,7 @@
         
             "type": "Microsoft.Compute/virtualMachines/extensions",
         "apiVersion": "2019-12-01",
-  "name": "InstallTeams",
+  "name": "[concat(parameters('vmName'), '/InstallTeams')]",
   "location": "[parameters('location')]",
   "properties": {
       "publisher": "Microsoft.Compute",
