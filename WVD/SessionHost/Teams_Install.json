@@ -19,7 +19,7 @@
         {
         
             "type": "Microsoft.Compute/virtualMachines/extensions",
-        "apiVersion": "2019-03-01",
+        "apiVersion": "2019-12-01",
   "name": "[concat(parameters('vmName'), '/InstallTeams')]",
   "location": "[parameters('location')]",
   "properties": {
@@ -28,7 +28,9 @@
       "typeHandlerVersion": "1.7",
       "autoUpgradeMinorVersion":true,
       "settings": {
-       "fileUris": ["'https://raw.githubusercontent.com/PaulTozer/AzureRMTemplates/master/WVD/SessionHost/Teams/Teams.ps1'"],
+       "fileUris": [
+       "https://raw.githubusercontent.com/PaulTozer/AzureRMTemplates/master/WVD/SessionHost/Teams/Teams.ps1" 
+       ],
         "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File Teams.ps1"
       }
   }
