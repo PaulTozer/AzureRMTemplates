@@ -29,8 +29,7 @@
       "autoUpgradeMinorVersion":true,
       "settings": {
        "fileUris": [
-        "[uri(deployment().properties.templateLink.uri, concat('/Scripts/Teams.ps1'))]"
-        ],
+        "[uri(deployment().properties.templateLink.uri, '/Scripts/Teams.ps1')]",
         "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File Teams.ps1"
       }
   }
