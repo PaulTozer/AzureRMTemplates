@@ -30,10 +30,32 @@
                 },
                 "parameters": {
                     "vmName": {
-                        "type": "[parameters('vmName')]"
+                        "value": "[parameters('vmName')]"
                     },
                     "location": {
                         "value": "[parameters('location')]"
+                    }
+                }
+            }     
+        },
+        {           
+            "name": "Teams",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2016-09-01",
+            "dependsOn": ["OneDrive"],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('TeamsTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "[parameters('vmName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    
                     }
                 }
             }     
