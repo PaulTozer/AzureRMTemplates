@@ -107,10 +107,11 @@ Invoke-WebRequest -Uri $Uri -OutFile "$($PSScriptRoot)\$ExecutableName"
 $MSIPath = "$($PSScriptRoot)\$ExecutableName"
 LogInfo("Installing OneDrive from path $MSIPath")
 
+$Switches = "/allusers"
+$ExePath = Join-Path $PSScriptRoot $ExecutableName
 
-$scriptBlock = { $MSIPath /allusers }
 LogInfo("Invoking command with the following scriptblock: $scriptBlock")
 LogInfo("Install logs can be found in the InstallLog.txt file in this folder.")
-Invoke-Command $scriptBlock -Verbose
+$Installer = Start-Process -FilePath $ExePath -ArgumentList $Switches -Wait -PassThru
 
-LogInfo("OneDrive was successfully installed")
+LogInfo("The exit code is $($Installer.ExitCode)")
