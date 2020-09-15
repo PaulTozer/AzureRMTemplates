@@ -107,7 +107,7 @@ $Uri3 = "https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RE4AQBt"
 
 Invoke-WebRequest -Uri $Uri -OutFile "$($PSScriptRoot)\$ExecutableName"
 Invoke-WebRequest -Uri $Uri2 -OutFile "$($PSScriptRoot)\vc_redist.x64.exe"
-Invoke-WebRequest -Uri $Uri2 -OutFile "$($PSScriptRoot)\MsRdcWebRTC.msi"
+Invoke-WebRequest -Uri $Uri3 -OutFile "$($PSScriptRoot)\MsRdcWebRTC.msi"
 
 $ExePath = Join-Path $PSScriptRoot $ExecutableName
 $Switches = "/install /passive /norestart"
