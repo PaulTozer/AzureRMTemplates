@@ -116,7 +116,8 @@ LogInfo("Installing VC++")
 $Installer = Start-Process -FilePath "$($PSScriptRoot)\vc_redist.x64.exe" -Wait -PassThru
 
 LogInfo("Installing Teams Web RTC")
-$scriptBlock = { msiexec /i $RTCPath /l*v "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\executionLog\Teams\InstallWebRTCLog.txt" }
+$scriptBlockRTC = { msiexec /i $RTCPath /l*v "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\executionLog\Teams\InstallWebRTCLog.txt" }
+Invoke-Command $scriptBlockRTC -Verbose
 
 $MSIPath = "$($PSScriptRoot)\$ExecutableName"
 LogInfo("Installing teams from path $MSIPath")
