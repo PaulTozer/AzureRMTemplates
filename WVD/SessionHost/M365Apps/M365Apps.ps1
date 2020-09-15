@@ -3,7 +3,7 @@ param (
     
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [string] $ExecutableName = "Setup.exe"
+    [string] $ExecutableName = "OfficeDeploy.zip"
 
 )
 
