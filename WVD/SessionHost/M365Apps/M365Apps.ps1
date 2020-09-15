@@ -101,17 +101,15 @@ function Set-Logger {
 
 Set-Logger "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\executionLog\M365Apps" # inside "executionCustomScriptExtension_$scriptName_$date.log"
 
-$Uri = "https://go.microsoft.com/fwlink/?linkid=844652"
+$Uri = "https://raw.githubusercontent.com/PaulTozer/AzureRMTemplates/master/WVD/SessionHost/M365Apps/OfficeDeploy.zip"
 Invoke-WebRequest -Uri $Uri -OutFile "$($PSScriptRoot)\$ExecutableName"
+$M365ArchivePath = Join-Path $PSScriptRoot "OfficeDeploy.zip"
+Expand-Archive -Path $M365ArchivePath -DestinationPath $PSScriptRoot
 
-$MSIPath = "$($PSScriptRoot)\$ExecutableName"
-LogInfo("Installing M365Apps from path $MSIPath")
+$ExecutableName = "setup.exe"
+$FSLogixExePath = Join-Path $PSScriptRoot $ExecutableName
 
 $Switches = "/configure Configuration.xml"
-$ExePath = Join-Path $PSScriptRoot $ExecutableName
 
-LogInfo("Invoking command with the following scriptblock: $scriptBlock")
-LogInfo("Install logs can be found in the InstallLog.txt file in this folder.")
-$Installer = Start-Process -FilePath $ExePath -ArgumentList $Switches -Wait -PassThru
-
+$Installer = Start-Process -FilePath $FSLogixExePath -ArgumentList $Switches -Wait -PassThru
 LogInfo("The exit code is $($Installer.ExitCode)")
