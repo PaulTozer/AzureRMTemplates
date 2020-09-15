@@ -101,7 +101,7 @@ function Set-Logger {
 
 Set-Logger "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\executionLog\FSLogix" # inside "executionCustomScriptExtension_$scriptName_$date.log"
 
-$Uri = "https://aks.ms/FSLogixDownload"
+$Uri = "https://aka.ms/FSLogixDownload"
 Invoke-WebRequest -Uri $Uri -OutFile "$($PSScriptRoot)\$ExecutableName"
 $FSLogixArchivePath = Join-Path $PSScriptRoot "FSLogixApp.zip"
 Expand-Archive -Path $FSLogixArchivePath -DestinationPath $PSScriptRoot
