@@ -14,12 +14,33 @@
         }
     },
     "variables": {
+        "M365AppsTemplateUri": "[uri(deployment().properties.templateLink.uri, concat('M365Apps.json'))]",
         "OneDriveTemplateUri": "[uri(deployment().properties.templateLink.uri, concat('OneDriveInstall.json'))]",
         "TeamsTemplateUri": "[uri(deployment().properties.templateLink.uri, concat('Teams_Install.json'))]",
         "FSLogixTemplateUri": "[uri(deployment().properties.templateLink.uri, concat('FSLogixInstall.json'))]"
     },
     "resources": [
-       {           
+        {           
+            "name": "M365AppsEnterprise",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2016-09-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('M365AppsTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "[parameters('vmName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }     
+        },
+        {           
             "name": "OneDrive",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2016-09-01",
