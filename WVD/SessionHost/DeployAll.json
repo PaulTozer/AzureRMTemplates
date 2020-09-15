@@ -42,7 +42,7 @@
             "name": "Teams",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2016-09-01",
-            "dependsOn": ["VNET"],
+            "dependsOn": ["OneDrive"],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
