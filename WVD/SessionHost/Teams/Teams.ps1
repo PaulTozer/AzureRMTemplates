@@ -110,10 +110,11 @@ Invoke-WebRequest -Uri $Uri2 -OutFile "$($PSScriptRoot)\vc_redist.x64.exe"
 Invoke-WebRequest -Uri $Uri2 -OutFile "$($PSScriptRoot)\MsRdcWebRTC.msi"
 
 $ExePath = Join-Path $PSScriptRoot $ExecutableName
+$Switches = "/install /passive /norestart"
 $RTCPath = "$($PSScriptRoot)\MsRdcWebRTC.msi"
 
 LogInfo("Installing VC++")
-$Installer = Start-Process -FilePath "$($PSScriptRoot)\vc_redist.x64.exe" -Wait -PassThru
+$Installer = Start-Process -FilePath "$($PSScriptRoot)\vc_redist.x64.exe" -ArgumentList $Switches -Wait -PassThru
 
 LogInfo("Installing Teams Web RTC")
 $scriptBlockRTC = { msiexec /i $RTCPath /l*v "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\executionLog\Teams\InstallWebRTCLog.txt" }
