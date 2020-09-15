@@ -102,7 +102,21 @@ function Set-Logger {
 Set-Logger "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\executionLog\Teams" # inside "executionCustomScriptExtension_$scriptName_$date.log"
 
 $Uri = "https://teams.microsoft.com/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&download=true"
+$Uri2 = "https://aka.ms/vs/16/release/vc_redist.x64.exe"
+$Uri3 = "https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RE4AQBt"
+
 Invoke-WebRequest -Uri $Uri -OutFile "$($PSScriptRoot)\$ExecutableName"
+Invoke-WebRequest -Uri $Uri2 -OutFile "$($PSScriptRoot)\vc_redist.x64.exe"
+Invoke-WebRequest -Uri $Uri2 -OutFile "$($PSScriptRoot)\MsRdcWebRTC.msi"
+
+$ExePath = Join-Path $PSScriptRoot $ExecutableName
+$RTCPath = "$($PSScriptRoot)\MsRdcWebRTC.msi"
+
+LogInfo("Installing VC++")
+$Installer = Start-Process -FilePath "$($PSScriptRoot)\vc_redist.x64.exe" -Wait -PassThru
+
+LogInfo("Installing Teams Web RTC")
+$scriptBlock = { msiexec /i $RTCPath /l*v "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\executionLog\Teams\InstallWebRTCLog.txt" }
 
 $MSIPath = "$($PSScriptRoot)\$ExecutableName"
 LogInfo("Installing teams from path $MSIPath")
