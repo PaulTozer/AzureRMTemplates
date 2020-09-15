@@ -106,10 +106,10 @@ Invoke-WebRequest -Uri $Uri -OutFile "$($PSScriptRoot)\$ExecutableName"
 $M365ArchivePath = Join-Path $PSScriptRoot "OfficeDeploy.zip"
 Expand-Archive -Path $M365ArchivePath -DestinationPath $PSScriptRoot
 
-$ExecutableName = "setup.exe"
+$ExecutableName = "OfficeDeploy\setup.exe"
 $FSLogixExePath = Join-Path $PSScriptRoot $ExecutableName
 
-$Switches = "/configure Configuration.xml"
+$Switches = "/configure .\OfficeDeploy\Configuration.xml"
 
 $Installer = Start-Process -FilePath $FSLogixExePath -ArgumentList $Switches -Wait -PassThru
 LogInfo("The exit code is $($Installer.ExitCode)")
