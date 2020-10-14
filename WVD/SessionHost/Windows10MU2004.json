@@ -14,7 +14,7 @@
         "LocalAdminPassword": {
             "type": "securestring"
         },
-        "virtualNetworkId": {
+        "VNETName": {
             "type": "string"
         },
         "subnetName": {
@@ -28,9 +28,8 @@
             }
         }
     },
-    "variables": {
-        "vnetId": "[parameters('virtualNetworkId')]",
-        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
+    "variables": {        
+        "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets/', parameters('VNETName'),parameters('subnetName'))]",
         "networkInt": "[concat(parameters('VMName'),'_Nic')]"
     },
     "resources": [
@@ -58,10 +57,10 @@
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2019-07-01",
             "name": "[parameters('VMName')]",
-            "dependsOn": [
-                "[variables('networkInt')]"
-                ],
             "location": "uksouth",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', variables('networkInt'))]"
+                ],
             "properties": {
                 "hardwareProfile": {
                     "vmSize": "[parameters('vmSize')]"
@@ -95,7 +94,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('VMName'),'_Nic'))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInt'))]"
                         }
                     ]
                 },
