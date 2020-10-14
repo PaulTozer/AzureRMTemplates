@@ -83,7 +83,7 @@
                "osProfile": {
                     "computerName": "[parameters('VMName')]",
                     "adminUsername": "[parameters('LocalAdminUsername')]",
-                    "adminPassword": "[parameters('LocalAdminPassword')]",
+                    "adminPassword": "[parameters('LocalAdminPassword')]"
                 },
                 "networkProfile": {
                     "networkInterfaces": [
