@@ -3,6 +3,11 @@
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FPaulTozer%2FAzureRMTemplates%2Fmaster%2FWVD%2FSessionHost%2FDeployAll.json" target="_blank">
     <img src="https://azurecomcdn.azureedge.net/mediahandler/acomblog/media/Default/blog/deploybutton.png"/>
 </a>
+<p><h2>Install Just Windows 10 MultiUser 2004 VM</h2></p>
+
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FPaulTozer%2FAzureRMTemplates%2Fmaster%2FWVD%2FSessionHost%2FWindows10MU2004.json" target="_blank">
+    <img src="https://azurecomcdn.azureedge.net/mediahandler/acomblog/media/Default/blog/deploybutton.png"/>
+</a>
 
 <p><h2>Install Just M365 Apps for Enterprise</h2></p>
 
