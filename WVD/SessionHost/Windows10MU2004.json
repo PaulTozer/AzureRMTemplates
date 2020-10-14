@@ -30,11 +30,12 @@
     },
     "variables": {
         "vnetId": "[parameters('virtualNetworkId')]",
-        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]"
+        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
+        "networkInt": "[concat(parameters('VMName'),'_Nic')]"
     },
     "resources": [
         {
-            "name": "[concat(parameters('VMName'),'_Nic')]",
+            "name": "[variables('networkInt')]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-07-01",
             "location": "[parameters('location')]",
@@ -59,8 +60,8 @@
             "name": "[parameters('VMName')]",
             "location": "uksouth",
             "dependsOn": [
-                "[concat('Microsoft.Network/networkInterfaces/', parameters('VMName'),'_Nic')]"
-            ],
+                "[concat('Microsoft.Network/networkInterfaces/', variables('networkInt'))]"
+                ],
             "properties": {
                 "hardwareProfile": {
                     "vmSize": "[parameters('vmSize')]"
@@ -89,7 +90,7 @@
                     "windowsConfiguration": {
                         "enableAutomaticUpdates": true,
                         "provisionVMAgent": true
-                    }  
+                    }   
                 },
                 "networkProfile": {
                     "networkInterfaces": [
