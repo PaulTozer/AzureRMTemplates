@@ -84,13 +84,6 @@
                     "computerName": "[parameters('VMName')]",
                     "adminUsername": "[parameters('LocalAdminUsername')]",
                     "adminPassword": "[parameters('LocalAdminPassword')]",
-                    "windowsConfiguration": {
-                        "enableAutomaticUpdates": true,
-                        "provisionVmAgent": true,
-                        "patchSettings": {
-                            "patchMode": "AutomaticByOS"
-                        }
-                    }
                 },
                 "networkProfile": {
                     "networkInterfaces": [
