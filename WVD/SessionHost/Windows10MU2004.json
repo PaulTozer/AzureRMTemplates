@@ -59,7 +59,7 @@
             "name": "[parameters('VMName')]",
             "location": "uksouth",
             "dependsOn": [
-                "[concat(parameters('VMName'),'_Nic')]"
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('VMName'),'_Nic')]"
             ],
             "properties": {
                 "hardwareProfile": {
