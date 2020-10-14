@@ -58,7 +58,9 @@
             "apiVersion": "2019-07-01",
             "name": "[parameters('VMName')]",
             "location": "uksouth",
-            "dependsOn": ["[concat(parameters('VMName'),'_Nic')]"],
+            "dependsOn": [
+                "[concat(parameters('VMName'),'_Nic')]"
+            ],
             "properties": {
                 "hardwareProfile": {
                     "vmSize": "[parameters('vmSize')]"
