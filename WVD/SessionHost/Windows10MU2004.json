@@ -58,10 +58,10 @@
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2019-07-01",
             "name": "[parameters('VMName')]",
-            "location": "uksouth",
             "dependsOn": [
-                "[concat('Microsoft.Network/networkInterfaces/', variables('networkInt'))]"
+                "[variables('networkInt')]"
                 ],
+            "location": "uksouth",
             "properties": {
                 "hardwareProfile": {
                     "vmSize": "[parameters('vmSize')]"
