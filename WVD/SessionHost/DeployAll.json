@@ -19,6 +19,7 @@
         },
         "subnetName": {
             "type": "string"
+        },
          "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
