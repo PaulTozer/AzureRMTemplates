@@ -5,7 +5,21 @@
         "vmName": {
             "type": "string"
         },
-        "location": {
+        "vmSize":{
+            "type": "String"
+        },
+        "LocalAdminUsername": {
+            "type": "string"
+        },
+        "LocalAdminPassword": {
+            "type": "securestring"
+        },
+        "VNETName": {
+            "type": "string"
+        },
+        "subnetName": {
+            "type": "string"
+         "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
             "metadata": {
@@ -14,12 +28,48 @@
         }
     },
     "variables": {
+        "Windows10MU2004TemplateUri": "[uri(deployment().properties.templateLink.uri, concat('Windows10MU2004.json'))]",
         "M365AppsTemplateUri": "[uri(deployment().properties.templateLink.uri, concat('M365Apps.json'))]",
         "OneDriveTemplateUri": "[uri(deployment().properties.templateLink.uri, concat('OneDriveInstall.json'))]",
         "TeamsTemplateUri": "[uri(deployment().properties.templateLink.uri, concat('Teams_Install.json'))]",
         "FSLogixTemplateUri": "[uri(deployment().properties.templateLink.uri, concat('FSLogixInstall.json'))]"
     },
     "resources": [
+        {           
+            "name": "Windows10MU2004",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2016-09-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('Windows10MU2004TemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "[parameters('vmName')]"
+                    },
+                    "vmSize":{
+                        "value": "[parameters('vmSize')]"
+                     },
+                     "LocalAdminUsername": {
+                        "value": "[parameters('LocalAdminUsername')]"
+                     },
+                     "LocalAdminPassword": {
+                        "value": "[parameters('LocalAdminPassword')]"
+                     },
+                     "VNETName": {
+                        "value": "[parameters('VNETName')]"
+                     },
+                     "subnetName": {
+                        "value": "[parameters('subnetName')]"
+                    
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }     
+        },
         {           
             "name": "M365AppsEnterprise",
             "type": "Microsoft.Resources/deployments",
