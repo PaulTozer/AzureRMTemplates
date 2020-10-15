@@ -64,7 +64,7 @@
                      },
                      "subnetName": {
                         "value": "[parameters('subnetName')]"
-                    
+                     },
                     "location": {
                         "value": "[parameters('location')]"
                     }
