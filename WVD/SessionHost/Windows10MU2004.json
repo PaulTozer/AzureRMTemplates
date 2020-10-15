@@ -32,38 +32,43 @@
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets/', parameters('VNETName'),parameters('subnetName'))]",
         "networkInt": "[concat(parameters('VMName'),'_Nic')]"
     },
-    "resources": [
+     "resources": [               
         {
-            "name": "[variables('networkInt')]",
             "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "2019-07-01",
+            "apiVersion": "2019-02-01",
+            "name": "[variables('networkInt')]",
             "location": "[parameters('location')]",
             "properties": {
                 "ipConfigurations": [
                     {
                         "name": "ipconfig1",
                         "properties": {
-                            "subnet": {
-                                "id": "[variables('subnetRef')]"
-                            },
-                            "privateIPAllocationMethod": "Dynamic"
+                            "subnet":{ "id": "[variables('SubnetRef')]"}
                         }
                     }
                 ]
             }
         },
-
         {
             "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2019-07-01",
+            "apiVersion": "2019-03-01",
             "name": "[parameters('VMName')]",
-            "location": "uksouth",
+            "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Network/networkInterfaces/', variables('networkInt'))]"
-                ],
+                "[variables('networkInt')]"
+            ],
             "properties": {
                 "hardwareProfile": {
                     "vmSize": "[parameters('vmSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[parameters('VMName')]",
+                    "adminUsername": "[parameters('localadminUsername')]",
+                    "adminPassword": "[parameters('localadminPassword')]",
+                    "windowsConfiguration": {
+                        "enableAutomaticUpdates": true,
+                        "provisionVMAgent": true
+                    } 
                 },
                 "storageProfile": {
                     "imageReference": {
@@ -73,23 +78,13 @@
                         "version": "latest"
                     },
                     "osDisk": {
-                        "osType": "Windows",
-                        "name": "[concat(parameters('VMName'), '_OsDisk')]",
+                        "name": "[concat(parameters('VMName'),'_OSDisk')]",
+                        "caching": "ReadOnly",
                         "createOption": "FromImage",
-                        "caching": "ReadWrite",
                         "managedDisk": {
-                           "storageAccountType": "Premium_LRS"
+                            "storageAccountType": "Premium_LRS"
                         }
                     }
-                },
-               "osProfile": {
-                    "computerName": "[parameters('VMName')]",
-                    "adminUsername": "[parameters('LocalAdminUsername')]",
-                    "adminPassword": "[parameters('LocalAdminPassword')]",
-                    "windowsConfiguration": {
-                        "enableAutomaticUpdates": true,
-                        "provisionVMAgent": true
-                    }   
                 },
                 "networkProfile": {
                     "networkInterfaces": [
