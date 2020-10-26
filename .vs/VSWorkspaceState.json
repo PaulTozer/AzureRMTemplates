@@ -2,8 +2,7 @@
   "ExpandedNodes": [
     "",
     "\\WVD",
-    "\\WVDSingle",
-    "\\WVD\\SessionHost"
+    "\\WVDSingle"
   ],
   "SelectedNode": "\\VPNGatewayCisco.json",
   "PreviewInSolutionExplorer": false
