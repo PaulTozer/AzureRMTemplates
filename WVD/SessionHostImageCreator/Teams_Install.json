@@ -29,7 +29,7 @@
       "autoUpgradeMinorVersion":true,
       "settings": {
        "fileUris": [
-       "https://raw.githubusercontent.com/PaulTozer/AzureRMTemplates/master/WVD/SessionHost/Teams/Teams.ps1" 
+       "https://raw.githubusercontent.com/PaulTozer/AzureRMTemplates/master/WVD/SessionHostImageCreator/Teams/Teams.ps1" 
        ],
         "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File Teams.ps1"
       }
