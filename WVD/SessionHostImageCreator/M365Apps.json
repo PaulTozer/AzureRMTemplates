@@ -29,7 +29,7 @@
       "autoUpgradeMinorVersion":true,
       "settings": {
        "fileUris": [
-       "https://raw.githubusercontent.com/PaulTozer/AzureRMTemplates/master/WVD/SessionHost/M365Apps/M365Apps.ps1" 
+       "https://raw.githubusercontent.com/PaulTozer/AzureRMTemplates/master/WVD/SessionHostImageCreator/M365Apps/M365Apps.ps1" 
        ],
         "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File M365Apps.ps1"
       }
