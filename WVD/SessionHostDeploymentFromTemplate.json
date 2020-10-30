@@ -56,6 +56,19 @@
     },
     "resources": [
         {
+            "name": "[parameters('availabilitySetName')]",
+            "type": "Microsoft.Compute/availabilitySets",
+            "apiVersion": "2019-07-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "[parameters('availabilitySetName')]"
+            },
+            "properties": {
+                "platformFaultDomainCount": 2,
+                "platformUpdateDomainCount": 5
+            }
+        },
+        {
             "name": "[concat(parameters('virtualMachineNamePrefix'), copyIndex(1), '-NIC')]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-07-01",
