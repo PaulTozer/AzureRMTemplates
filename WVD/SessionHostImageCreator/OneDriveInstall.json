@@ -29,7 +29,7 @@
       "autoUpgradeMinorVersion":true,
       "settings": {
        "fileUris": [
-       "https://raw.githubusercontent.com/PaulTozer/AzureRMTemplates/master/WVD/SessionHost/OneDrive/OneDrive.ps1" 
+       "https://raw.githubusercontent.com/PaulTozer/AzureRMTemplates/master/WVD/SessionHostImageCreator/OneDrive/OneDrive.ps1" 
        ],
         "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File OneDrive.ps1"
       }
