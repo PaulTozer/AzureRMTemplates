@@ -8,9 +8,6 @@
         "imageReference": {
             "type": "string"    
         },
-        "networkInterfaceName": {
-            "type": "string"
-        },
         "subnetName": {
             "type": "string"
         },
@@ -100,6 +97,7 @@
                 },
                 "storageProfile": {
                     "osDisk": {
+                        "name": "[concat(parameters('virtualMachineNamePrefix'), copyIndex(1),'_OSDisk')]",
                         "createOption": "fromImage",
                         "managedDisk": {
                             "storageAccountType": "[parameters('osDiskType')]"
@@ -112,7 +110,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('virtualMachineNamePrefix'), copyIndex(1), '-NIC'))]"
                         }
                     ]
                 },
@@ -148,12 +146,13 @@
                 "typeHandlerVersion": "1.5",
                 "autoUpgradeMinorVersion": true,
                 "settings": {
+                    "xmlCfg": "",
                     "StorageAccount": "[parameters('diagnosticsStorageAccountName')]",
                     "WadCfg": {
                         "DiagnosticMonitorConfiguration": {
                             "overallQuotaInMB": 5120,
                             "Metrics": {
-                                "resourceId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/', 'Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]",
+                                "resourceId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/', 'Microsoft.Compute/virtualMachines/', parameters('virtualMachineNamePrefix'), copyIndex(1))]",
                                 "MetricAggregation": [
                                     {
                                         "scheduledTransferPeriod": "PT1H"
