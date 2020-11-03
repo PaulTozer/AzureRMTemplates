@@ -31,7 +31,7 @@
             "type": "string"
         },
         "virtualMachineSize": {
-            "defaultValue": ["Standard_D4as_v4","Standard_D4s_v4","Standard_E8as_v4","Standard_E8s_v4"],
+            "defaultValue": "Standard_D8as_v4",
             "type": "string"
         },
         "adminUsername": {
