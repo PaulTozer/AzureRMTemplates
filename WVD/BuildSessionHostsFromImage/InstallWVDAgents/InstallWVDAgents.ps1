@@ -131,8 +131,10 @@ Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 Install-Module -Name PowershellGet -MinimumVersion 2.2.4.1 -Force
 Install-Module -Name Az -Force -Verbose
 
-Remove-AzWvdRegistrationInfo -ResourceGroupName $ResourceGroupName -HostPoolName $HostPoolName
-$RegistrationTokenNew = New-AzWvdRegistrationInfo -ResourceGroupName $ResourceGroupName -HostPoolName $hostpoolname -ExpirationTime $((get-date).ToUniversalTime().AddDays(1).ToString('yyyy-MM-ddTHH:mm:ss.fffffffZ'))
+$Credential = New-Object System.Management.Automation.PsCredential($Username, (ConvertTo-SecureString $Password -AsPlainText -Force))
+Connect-AzAccount -Credential $Credential
+
+$RegistrationTokenNew = Export-RdsRegistration -ResourceGroupName $ResourceGroupName -HostPoolName $hostpoolname
 
 $RegistrationKey = $RegistrationTokenNew.Token
 

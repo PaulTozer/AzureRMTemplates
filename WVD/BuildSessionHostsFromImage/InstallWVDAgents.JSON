@@ -45,7 +45,7 @@
       "autoUpgradeMinorVersion":true,
       "settings": {
        "fileUris": [
-       "https://raw.githubusercontent.com/PaulTozer/AzureRMTemplates/master/WVD/SessionHostDeploymentFromTemplate/InstallWVDAgents/InstallWVDAgents.ps1" 
+       "https://raw.githubusercontent.com/PaulTozer/AzureRMTemplates/master/WVD/BuildSessionHostsFromImage/InstallWVDAgents/InstallWVDAgents.ps1" 
        ],
         "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File InstallWVDAgents.ps1 -HostPoolName ', parameters('HostPoolName'),' -Username ',parameters('AzureADUserName'),' -Password ', parameters('AzureADPassword'), ' -ResourceGroupName ', resourceGroup().name)]"
       }
