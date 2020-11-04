@@ -2,9 +2,7 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "location": {
-            "type": "string"
-        },
+    
         "imageReference": {
             "type": "string"    
         },
@@ -56,13 +54,16 @@
             "properties": {
                 "platformFaultDomainCount": 2,
                 "platformUpdateDomainCount": 5
+            },
+            "sku":{
+                "name": "Aligned"
             }
         },
         {
             "name": "[concat(parameters('virtualMachineNamePrefix'), copyIndex(1), '_Nic')]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-07-01",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [],
             "copy": {
                 "name": "NICCopy",
@@ -86,7 +87,7 @@
             "name": "[concat(parameters('virtualMachineNamePrefix'), copyIndex(1))]",
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2019-07-01",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('virtualMachineNamePrefix'), copyIndex(1), '_Nic'))]"
             ],
