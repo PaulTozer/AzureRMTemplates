@@ -131,8 +131,8 @@ Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 Install-Module -Name PowershellGet -MinimumVersion 2.2.4.1 -Force
 Install-Module -Name Az -Force -Verbose
 
-Import-Module Az.Accounts
-Import-Module Az.DesktopVirtualization
+Import-Module Az.Accounts -Force -Verbose
+Import-Module Az.DesktopVirtualization -Force -Verbose
 
 $Credential = New-Object System.Management.Automation.PsCredential($Username, (ConvertTo-SecureString $Password -AsPlainText -Force))
 Connect-AzAccount -Credential $Credential
@@ -141,9 +141,11 @@ $RegistrationTokenNew = Get-AzWvdRegistrationInfo -ResourceGroupName $ResourceGr
 
 $RegistrationKey = $RegistrationTokenNew.Token
 
-$bootloader_deploy_statusAgent = Start-Process -FilePath "msiexec.exe" -ArgumentList '/i $WVDAgentInstallLocation, "REGISTRATIONTOKEN=$Registrationkey"', "/quiet", "/qn", "/passive" -Wait -Passthru
+$bootloader_deploy_statusAgent = { msiexec /i $WVDAgentInstallLocation REGISTRATIONTOKEN=$Registrationkey /quiet /qn /passive }
+Invoke-Command $bootloader_deploy_statusAgent -Verbose
 LogInfo("The exit code is $($bootloader_deploy_statusAgent.ExitCode)")
-$bootloader_deploy_statusBootLoader = Start-Process -FilePath "msiexec.exe" -ArgumentList '/i $WVDBootloadertInstallLocation', "/quiet", "/qn", "/passive" -Wait -Passthru
+$bootloader_deploy_statusBootLoader = { msiexec /i $WVDBootloadertInstallLocation /quiet /qn /passive }
+Invoke-Command bootloader_deploy_statusBootLoader -Verbose
 LogInfo("The exit code is $($bootloader_deploy_statusBootLoader.ExitCode)")
 
 
