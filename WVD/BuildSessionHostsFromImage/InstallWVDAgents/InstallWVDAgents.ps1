@@ -137,7 +137,7 @@ Import-Module Az.DesktopVirtualization
 $Credential = New-Object System.Management.Automation.PsCredential($Username, (ConvertTo-SecureString $Password -AsPlainText -Force))
 Connect-AzAccount -Credential $Credential
 
-$RegistrationTokenNew = Export-AzWvdRegistrationInfo -ResourceGroupName $ResourceGroupName -HostPoolName $hostpoolname
+$RegistrationTokenNew = Get-AzWvdRegistrationInfo -ResourceGroupName $ResourceGroupName -HostPoolName $hostpoolname
 
 $RegistrationKey = $RegistrationTokenNew.Token
 
