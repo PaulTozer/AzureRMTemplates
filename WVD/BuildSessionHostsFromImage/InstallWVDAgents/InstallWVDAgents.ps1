@@ -134,7 +134,7 @@ Install-Module -Name Az -Force -Verbose
 $Credential = New-Object System.Management.Automation.PsCredential($Username, (ConvertTo-SecureString $Password -AsPlainText -Force))
 Connect-AzAccount -Credential $Credential
 
-$RegistrationTokenNew = Export-RdsRegistration -ResourceGroupName $ResourceGroupName -HostPoolName $hostpoolname
+$RegistrationTokenNew = Export-RdsRegistrationInfo -ResourceGroupName $ResourceGroupName -HostPoolName $hostpoolname
 
 $RegistrationKey = $RegistrationTokenNew.Token
 
