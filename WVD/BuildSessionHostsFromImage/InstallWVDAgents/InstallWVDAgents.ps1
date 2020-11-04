@@ -121,8 +121,10 @@ $WVDAgentInstallUri = "https://query.prod.cms.rt.microsoft.com/cms/api/am/binary
 $WVDAgentBootloaderUri = "https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RWrxrH"
 
 Invoke-WebRequest -Uri $WVDAgentInstallUri -OutFile "$($PSScriptRoot)\$WVDInstallAgentExecutableName"
-Invoke-WebRequest -Uri $WVDAgentInstallUri -OutFile "$($PSScriptRoot)\$WVDInstallBootloaderExecutableName"
+Invoke-WebRequest -Uri $WVDAgentBootloaderUri -OutFile "$($PSScriptRoot)\$WVDInstallBootloaderExecutableName"
 
+$WVDAgentInstallLocation = "$($PSScriptRoot)\$WVDInstallAgentExecutableName"
+$WVDBootloadertInstallLocation = "$($PSScriptRoot)\$WVDInstallBootloaderExecutableName"
 
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force
 Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
@@ -134,9 +136,9 @@ $RegistrationTokenNew = New-AzWvdRegistrationInfo -ResourceGroupName $ResourceGr
 
 $RegistrationKey = $RegistrationTokenNew.Token
 
-$bootloader_deploy_statusAgent = Start-Process -FilePath "msiexec.exe" -ArgumentList '/i "$($PSScriptRoot)\$WVDInstallAgentExecutableName", "REGISTRATIONTOKEN=$Registrationkey"', "/quiet", "/qn", "/passive" -Wait -Passthru
+$bootloader_deploy_statusAgent = Start-Process -FilePath "msiexec.exe" -ArgumentList '/i $WVDAgentInstallLocation, "REGISTRATIONTOKEN=$Registrationkey"', "/quiet", "/qn", "/passive" -Wait -Passthru
 LogInfo("The exit code is $($bootloader_deploy_statusAgent.ExitCode)")
-$bootloader_deploy_statusBootLoader = Start-Process -FilePath "msiexec.exe" -ArgumentList '/i "$($PSScriptRoot)\$WVDInstallAgentExecutableName"', "/quiet", "/qn", "/passive" -Wait -Passthru
+$bootloader_deploy_statusBootLoader = Start-Process -FilePath "msiexec.exe" -ArgumentList '/i $WVDBootloadertInstallLocation', "/quiet", "/qn", "/passive" -Wait -Passthru
 LogInfo("The exit code is $($bootloader_deploy_statusBootLoader.ExitCode)")
 
 
