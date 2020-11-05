@@ -188,6 +188,10 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/virtualMachines', concat(parameters('virtualMachineNamePrefix'), copyIndex(1)))]"
             ],
+            "copy": {
+                "name": "DomainJoinCopy",
+                "count": "[parameters('virtualMachineCount')]"
+            },
             "properties": {
                 "publisher": "Microsoft.Compute",
                 "type": "JsonADDomainExtension",
@@ -215,6 +219,10 @@
                 "[resourceId('Microsoft.Compute/virtualMachines/extensions', concat(parameters('virtualMachineNamePrefix'), copyIndex(1),'/joindomain'))]"
             ],
             "location": "[resourceGroup().location]",
+            "copy": {
+                "name": "WVDCopy",
+                "count": "[parameters('virtualMachineCount')]"
+            },
             "properties": {
                 "publisher": "Microsoft.Compute",
                 "type": "CustomScriptExtension",
