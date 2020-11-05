@@ -32,10 +32,10 @@
         "availabilitySetName": {
             "type": "string"
         },
-        "adminUsername": {
+        "LocalAdminUsername": {
             "type": "string"
         },
-        "adminPassword": {
+        "LocalAdminPassword": {
             "type": "secureString"
         },
         "domainJoinUserName": {
@@ -61,6 +61,21 @@
         "defaultValue": "",
         "metadata": {
             "description": "Specifies an organizational unit (OU) for the domain account. Enter the full distinguished name of the OU in quotation marks. Example: \"OU=testOU; DC=domain; DC=Domain; DC=com\""
+            }
+        },
+        "HostPoolName": {
+            "type": "string"
+        },
+        "AzureADUserName": {
+            "type": "string",
+            "metadata": {
+                "description": "Azure AD Username with Permission to Join WVD Host to HostPool"
+            }
+        },
+        "AzureADPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Azure AD Password with Permission to Join WVD Host to HostPool"
             }
         }
     },
@@ -146,8 +161,8 @@
                 },
                 "osProfile": {
                     "computerName": "[concat(parameters('virtualMachineNamePrefix'), copyIndex(1))]",
-                    "adminUsername": "[parameters('adminUsername')]",
-                    "adminPassword": "[parameters('adminPassword')]",
+                    "adminUsername": "[parameters('LocalAdminUsername')]",
+                    "adminPassword": "[parameters('LocalAdminPassword')]",
                     "windowsConfiguration": {
                         "enableAutomaticUpdates": true,
                         "provisionVmAgent": true
@@ -170,6 +185,9 @@
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "name": "[concat(parameters('virtualMachineNamePrefix'), copyIndex(1),'/joindomain')]",
             "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines', concat(parameters('virtualMachineNamePrefix'), copyIndex(1)))]"
+            ],
             "properties": {
                 "publisher": "Microsoft.Compute",
                 "type": "JsonADDomainExtension",
@@ -194,7 +212,7 @@
             "apiVersion": "2019-12-01",
             "name": "[concat(parameters('virtualMachineNamePrefix'), copyIndex(1), '/PSExtensionInstall')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines', concat(parameters('virtualMachineNamePrefix'), copyIndex(1)))]"
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', concat(parameters('virtualMachineNamePrefix'), copyIndex(1),'/joindomain'))]"
             ],
             "location": "[resourceGroup().location]",
             "properties": {
@@ -214,7 +232,7 @@
     "outputs": {
         "adminUsername": {
             "type": "string",
-            "value": "[parameters('adminUsername')]"
+            "value": "[parameters('LocalAdminUsername')]"
         }
     }
 }
