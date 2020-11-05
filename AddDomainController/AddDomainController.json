@@ -63,23 +63,24 @@
         }
     },
     "variables": {
-        "DCVMNICName": "variables('DomainControllerName')",
-        "ServerSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets/', parameters('VNETName'),parameters('Subnet'))]",
+        "DCVMName": "[concat(parameters('DomainControllerName'), '-01')]",
+        "DCVMNicName": "[concat(variables('DCVMName'),'-Nic')]",
+        "ServerSubnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets/', parameters('VNETName'),parameters('Subnet'))]"
     },
     "resources": [       
         {
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-02-01",
             "name": "[variables('DCVMNICName')]",
-            "location": "[parameters('location')]"
+            "location": "[parameters('location')]",
             "properties": {
                 "ipConfigurations": [
                     {
                         "name": "ipconfig1",
                         "properties": {
                             "privateIPAllocationMethod": "Static",
-                            "privateIPAddress": "[variables('DCIPAddress')]",
-                            "subnet":{ "id": "[variables('ServerSubnetRef')]"},                       
+                            "privateIPAddress": "[parameters('DCIPAddress')]",
+                            "subnet":{ "id": "[variables('ServerSubnetRef')]"}                       
                         }
                     }
                 ]
@@ -114,7 +115,7 @@
                         "caching": "ReadOnly",
                         "createOption": "FromImage",
                         "managedDisk": {
-                            "storageAccountType": "PremiumSSD_LRS"
+                            "storageAccountType": "Premium_LRS"
                         }
                     },
                     "dataDisks": [
@@ -124,7 +125,7 @@
                             "createOption": "Empty",
                             "diskSizeGB": 20,
                             "managedDisk": {
-                                "storageAccountType": "PremiumSSD_LRS"
+                                "storageAccountType": "Premium_LRS"
                             },
                             "lun": 0
                         }
