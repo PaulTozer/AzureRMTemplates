@@ -144,6 +144,9 @@ $RegistrationKey = $RegistrationTokenNew.Token
 $bootloader_deploy_statusAgent = { msiexec /i $WVDAgentInstallLocation REGISTRATIONTOKEN=$Registrationkey /quiet /qn /passive }
 Invoke-Command $bootloader_deploy_statusAgent -Verbose
 LogInfo("The exit code is $($bootloader_deploy_statusAgent.ExitCode)")
+
+start-sleep -Seconds 30
+
 $bootloader_deploy_statusBootLoader = { msiexec /i $WVDBootloadertInstallLocation /quiet /qn /passive }
 Invoke-Command bootloader_deploy_statusBootLoader -Verbose
 LogInfo("The exit code is $($bootloader_deploy_statusBootLoader.ExitCode)")
