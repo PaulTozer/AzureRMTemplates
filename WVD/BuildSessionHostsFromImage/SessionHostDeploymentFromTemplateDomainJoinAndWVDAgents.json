@@ -81,7 +81,8 @@
     },
     "variables": {
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'),parameters('subnetName'))]",
-        "domainJoinOptions": 3
+        "domainJoinOptions": 3,
+        "DomainJoinExtentionname": "DomainJoin"
     },
     "resources": [
         {
@@ -183,7 +184,7 @@
         {
             "apiVersion": "2015-06-15",
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "name": "[concat(parameters('virtualMachineNamePrefix'), copyIndex(1),'/joindomain')]",
+            "name": "[concat(parameters('virtualMachineNamePrefix'), copyIndex(1),'/',variables('DomainJoinExtentionname'))]",
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.Compute/virtualMachines', concat(parameters('virtualMachineNamePrefix'), copyIndex(1)))]"
@@ -216,7 +217,7 @@
             "apiVersion": "2019-12-01",
             "name": "[concat(parameters('virtualMachineNamePrefix'), copyIndex(1), '/PSExtensionInstall')]",
             "dependsOn": [
-                "[concat(parameters('virtualMachineNamePrefix'), copyIndex(1),'/joindomain')]"
+                "[resourceId('Microsoft.Compute/virtualMachines', concat(parameters('virtualMachineNamePrefix'), copyIndex(1)),variables('DomainJoinExtentionname'))]"
             ],
             "location": "[resourceGroup().location]",
             "copy": {
