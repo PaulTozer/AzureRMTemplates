@@ -217,7 +217,7 @@
             "apiVersion": "2019-12-01",
             "name": "[concat(parameters('virtualMachineNamePrefix'), copyIndex(1), '/PSExtensionInstall')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/virtualMachines', concat(parameters('virtualMachineNamePrefix'), copyIndex(1)),variables('DomainJoinExtentionname'))]"
+                "[resourceId('Microsoft.Compute/virtualMachines/extensions', concat(parameters('virtualMachineNamePrefix'), copyIndex(1)),variables('DomainJoinExtentionname'))]"
             ],
             "location": "[resourceGroup().location]",
             "copy": {
