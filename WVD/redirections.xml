@@ -4,21 +4,22 @@
      	<Exclude Copy="0">AppData\Local\Downloaded Installations</Exclude>
      	<Exclude Copy="0">AppData\Local\Assembly</Exclude>
     	<Exclude Copy="0">AppData\Local\Sun</Exclude>
-    	<Exclude Copy="0">AppData\Local\CrashDumps</Exclude>    	<Exclude Copy="0">AppData\Local\Microsoft\Terminal Server Client</Exclude>
+    	<Exclude Copy="0">AppData\Local\CrashDumps</Exclude>    	
+      <Exclude Copy="0">AppData\Local\Microsoft\Terminal Server Client</Exclude>
     	<Exclude Copy="0">AppData\Local\Google\Chrome\User Data\Default\Cache</Exclude>
-    <Exclude Copy="0">AppData\Local\Packages\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\AC\MicrosoftEdge\Cache</Exclude>a
-    <Exclude Copy="0">AppData\Local\Microsoft\Edge SxS\User Data\Default\Cache</Exclude>
-    <Exclude Copy="0">AppData\Local\SquirrelTemp</Exclude>
-    <Exclude Copy="0">AppData\Local\Microsoft\Teams\Current\Locales</Exclude>
-    <Exclude Copy="0">AppData\Local\Microsoft\Teams\Packages\SquirrelTemp</Exclude>
-    <Exclude Copy="0">AppData\Local\Microsoft\Teams\current\resources\locales</Exclude>
-    <Exclude Copy="0">AppData\Local\Microsoft\Teams\Current\Locales</Exclude>
-    <Exclude Copy="0">AppData\Roaming\Microsoft\Teams\Service Worker\CacheStorage</Exclude>
-    <Exclude Copy="0">AppData\Roaming\Microsoft\Teams\Application Cache</Exclude>
-    <Exclude Copy="0">AppData\Roaming\Microsoft\Teams\Cache</Exclude>
-    <Exclude Copy="0">AppData\Roaming\Microsoft Teams\Logs</Exclude>
-    <Exclude Copy="0">AppData\Roaming\Microsoft\Teams\media-stack</Exclude>
-    <Exclude Copy="0">AppData\Roaming\Sun\Java\Deployment\cache</Exclude>
+      <Exclude Copy="0">AppData\Local\Packages\Microsoft.MicrosoftEdge_8wekyb3d8bbwe\AC\MicrosoftEdge\Cache</Exclude>
+      <Exclude Copy="0">AppData\Local\Microsoft\Edge SxS\User Data\Default\Cache</Exclude>
+      <Exclude Copy="0">AppData\Local\SquirrelTemp</Exclude>
+      <Exclude Copy="0">AppData\Local\Microsoft\Teams\Current\Locales</Exclude>
+      <Exclude Copy="0">AppData\Local\Microsoft\Teams\Packages\SquirrelTemp</Exclude>
+      <Exclude Copy="0">AppData\Local\Microsoft\Teams\current\resources\locales</Exclude>
+      <Exclude Copy="0">AppData\Local\Microsoft\Teams\Current\Locales</Exclude>
+      <Exclude Copy="0">AppData\Roaming\Microsoft\Teams\Service Worker\CacheStorage</Exclude>
+      <Exclude Copy="0">AppData\Roaming\Microsoft\Teams\Application Cache</Exclude>
+      <Exclude Copy="0">AppData\Roaming\Microsoft\Teams\Cache</Exclude>
+      <Exclude Copy="0">AppData\Roaming\Microsoft Teams\Logs</Exclude>
+      <Exclude Copy="0">AppData\Roaming\Microsoft\Teams\media-stack</Exclude>
+      <Exclude Copy="0">AppData\Roaming\Sun\Java\Deployment\cache</Exclude>
   </Excludes>
   <Includes />
 </FrxProfileFolderRedirection>
