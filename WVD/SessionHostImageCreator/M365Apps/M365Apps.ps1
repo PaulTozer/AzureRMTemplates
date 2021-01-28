@@ -101,7 +101,7 @@ function Set-Logger {
 
 Set-Logger "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\executionLog\M365Apps" # inside "executionCustomScriptExtension_$scriptName_$date.log"
 
-$Uri = "https://raw.githubusercontent.com/PaulTozer/AzureRMTemplates/master/WVD/SessionHost/M365Apps/OfficeDeploy.zip"
+$Uri = "https://raw.githubusercontent.com/PaulTozer/AzureRMTemplates/master/WVD/SessionHostImageCreator/M365Apps/OfficeDeploy.zip"
 Invoke-WebRequest -Uri $Uri -OutFile "$($PSScriptRoot)\$ExecutableName"
 $M365ArchivePath = Join-Path $PSScriptRoot "OfficeDeploy.zip"
 Expand-Archive -Path $M365ArchivePath -DestinationPath $PSScriptRoot
