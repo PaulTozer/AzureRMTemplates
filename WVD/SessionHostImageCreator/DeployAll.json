@@ -37,7 +37,7 @@
     },
     "resources": [
         {           
-            "name": "Windows10MU2004",
+            "name": "Windows10MU20h2",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2016-09-01",
             "properties": {
