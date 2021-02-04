@@ -29,7 +29,7 @@
         }
     },
     "variables": {
-        "Windows10MU2004TemplateUri": "[uri(deployment().properties.templateLink.uri, concat('Windows10MU2004.json'))]",
+        "Windows10MU2004TemplateUri": "[uri(deployment().properties.templateLink.uri, concat('Windows10MU20h2.json'))]",
         "M365AppsTemplateUri": "[uri(deployment().properties.templateLink.uri, concat('M365Apps.json'))]",
         "OneDriveTemplateUri": "[uri(deployment().properties.templateLink.uri, concat('OneDriveInstall.json'))]",
         "TeamsTemplateUri": "[uri(deployment().properties.templateLink.uri, concat('Teams_Install.json'))]",
