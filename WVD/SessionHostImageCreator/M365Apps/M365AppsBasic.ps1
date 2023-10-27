@@ -5,5 +5,6 @@ $M365ArchivePath = Join-Path $PSScriptRoot "OfficeDeploy.zip"
 Expand-Archive -Path $M365ArchivePath -DestinationPath $PSScriptRoot
 $ExecutableName = "OfficeDeploy\setup.exe"
 $Switches = "/configure .\OfficeDeploy\Configuration.xml"
-$Installer = Start-Process -FilePath $FSLogixExePath -ArgumentList $Switches -Wait -PassThru
+$OfficeExePath = Join-Path $PSScriptRoot $ExecutableName
+$Installer = Start-Process -FilePath $OfficeExePath -ArgumentList $Switches -Wait -PassThru
 
