@@ -6,7 +6,7 @@ $Uri = "https://raw.githubusercontent.com/PaulTozer/AzureRMTemplates/master/WVD/
 Invoke-WebRequest -Uri $Uri -OutFile $path
 Expand-Archive -Path $path -DestinationPath $foldername -Force
 $InstallExec = "OfficeDeploy\setup.exe"
-$Switches = "/configure .\OfficeDeploy\Configuration.xml"
 $OfficeExePath = Join-Path $Foldername $InstallExec
+$Switches = "/configure $Foldername\OfficeDeploy\Configuration.xml"
 $Installer = Start-Process -FilePath $OfficeExePath -ArgumentList $Switches -Wait -PassThru
 
